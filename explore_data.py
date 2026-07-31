@@ -17,7 +17,11 @@ What this script does:
 import sys
 sys.path.append('.')
 
-from src.data_loader import load_prostate_data, get_feature_descriptions
+from src.data_loader import (
+    get_feature_descriptions,
+    get_predictors_and_target,
+    load_prostate_data,
+)
 from src.visualization import (
     plot_data_distribution, 
     plot_correlation_heatmap, 
@@ -89,9 +93,10 @@ def main():
     print(f"   • Range: {data['lpsa'].min():.3f} to {data['lpsa'].max():.3f}")
     
     # Find strongest correlations with PSA
-    correlations = data.corr()['lpsa'].abs().sort_values(ascending=False)
+    predictors, target = get_predictors_and_target(data)
+    correlations = predictors.corrwith(target).abs().sort_values(ascending=False)
     print(f"\n   Top 3 Features Correlated with PSA:")
-    for i, (feature, corr) in enumerate(list(correlations.items())[1:4], 1):
+    for i, (feature, corr) in enumerate(list(correlations.items())[:3], 1):
         print(f"   {i}. {feature}: {corr:.3f}")
     
     print("\n💾 All visualizations saved to: results/figures/")

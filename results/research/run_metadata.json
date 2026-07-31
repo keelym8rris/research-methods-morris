@@ -1,0 +1,22 @@
+{
+  "study_role": "post-diagnostic pilot; not a screening or diagnostic model",
+  "outcome": "lpsa (log PSA)",
+  "patients": 97,
+  "predictors": [
+    "lcavol",
+    "lweight",
+    "age",
+    "lbph",
+    "svi",
+    "lcp",
+    "gleason",
+    "pgg45"
+  ],
+  "excluded_metadata": [
+    "train"
+  ],
+  "validation": "5-fold cross-validation repeated 10 times",
+  "selection_metric": "mean held-out RMSE",
+  "best_model": "Linear Regression",
+  "random_state": 42
+}

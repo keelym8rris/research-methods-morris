@@ -31,6 +31,8 @@ from src.models.neural_network import train_neural_network
 
 
 def main():
+    print("\nNOTE: This is the legacy educational single-split comparison.")
+    print("Use `python run_research_analysis.py` for thesis results.\n")
     print("\n" + "="*70)
     print("🏆 COMPREHENSIVE MODEL COMPARISON")
     print("="*70)
@@ -129,11 +131,11 @@ def main():
     
     print("\n🎯 Recommendations:")
     if best_model['r2_score'] > 0.7:
-        print(f"   • {best_model['model_name']} shows excellent performance!")
-        print("   • Use this model for predictions")
+        print(f"   • {best_model['model_name']} ranks first on this one split")
+        print("   • Confirm with repeated validation before drawing conclusions")
     elif best_model['r2_score'] > 0.5:
-        print(f"   • {best_model['model_name']} shows good performance")
-        print("   • Consider hyperparameter tuning for improvement")
+        print(f"   • {best_model['model_name']} ranks first on this one split")
+        print("   • Compare uncertainty with the thesis-grade workflow")
     else:
         print("   • All models show room for improvement")
         print("   • Consider feature engineering or more data")

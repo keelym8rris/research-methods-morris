@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings('ignore')
 sys.path.append('.')
 
-from src.data_loader import load_prostate_data, prepare_data
+from src.data_loader import get_predictors_and_target, load_prostate_data, prepare_data
 from src.visualization import (
     plot_data_distribution,
     plot_correlation_heatmap,
@@ -41,6 +41,8 @@ def print_header(title):
 
 
 def main():
+    print("\nNOTE: This is the legacy educational single-split workflow.")
+    print("Use `python run_research_analysis.py` for thesis results.\n")
     print("\n" + "█"*70)
     print("█" + " "*68 + "█")
     print("█  PROSTATE CANCER PSA PREDICTION - COMPLETE ML ANALYSIS  ".center(70 - 2) + "█")
@@ -179,8 +181,9 @@ def main():
     print("   • Individual model scripts available in: src/models/")
     
     print("\n🎯 KEY FINDINGS:")
-    correlations = data.corr()['lpsa'].abs().sort_values(ascending=False)
-    print(f"   • Top predictor: {correlations.index[1]} (correlation: {correlations.iloc[1]:.3f})")
+    predictors, target = get_predictors_and_target(data)
+    correlations = predictors.corrwith(target).abs().sort_values(ascending=False)
+    print(f"   • Top predictor: {correlations.index[0]} (correlation: {correlations.iloc[0]:.3f})")
     print(f"   • Dataset size: {len(data)} patients")
     print(f"   • Features used: {len(data_dict['feature_names'])}")
     

@@ -5,6 +5,9 @@ QUICK REFERENCE GUIDE
 Quick commands for running different analyses:
 """
 
+# This file is documentation, not an executable analysis module.
+QUICK_REFERENCE = r"""
+
 # ============================================================================
 # BASIC USAGE
 # ============================================================================
@@ -121,3 +124,9 @@ plot_feature_relationships(data, save=True)
 # If you want to modify model parameters:
 # Open the individual model scripts in src/models/
 # Each has detailed documentation and parameter descriptions
+"""
+
+
+if __name__ == "__main__":
+    print("Use `python run_research_analysis.py` for thesis-grade results.")
+    print(QUICK_REFERENCE)
