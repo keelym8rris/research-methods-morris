@@ -20,6 +20,7 @@ Dr. Husari endorsed the two-part thesis and described the project as a combinati
 - Added explicit language distinguishing log-PSA prediction from screening, diagnosis, and cancer-risk prediction.
 - Added a PLCO chapter plan grounded in the official NCI prostate data dictionary.
 - Added literature anchors for interpretability, prediction-model reporting, risk of bias, and sample-size limitations.
+- Expanded the evidence base from 10 to 24 sources and converted the working paper to IEEE structure and reference style.
 
 ## Recommended next research meeting decisions
 

@@ -50,8 +50,8 @@ These values are research results for a small, post-diagnostic log-PSA dataset. 
 - `src/research_analysis.py`: leakage-safe repeated cross-validation and interpretability analysis
 - `run_research_analysis.py`: command-line entry point for the thesis pilot
 - `src/models/`: original educational single-split model implementations
-- `docs/thesis_draft.md`: revised two-part thesis draft
-- `docs/literature_review_matrix.md`: high-quality papers and how each supports the thesis
+- `docs/thesis_draft.md`: revised two-part paper with IEEE headings, numbered in-text citations, and 24 references
+- `docs/literature_review_matrix.md`: 24-source evidence matrix aligned to IEEE citation order
 - `docs/advisor_feedback_plan.md`: Dr. Husari's feedback translated into project actions
 - `tests/`: regression tests for metadata exclusion and analysis coverage
 

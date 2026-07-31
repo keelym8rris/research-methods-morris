@@ -207,10 +207,13 @@ def run_analysis(data_path="data/prostate.csv", output_dir="results/research"):
         models[best_model_name],
     )
 
-    folds.to_csv(output_path / "fold_metrics.csv", index=False)
-    model_summary.to_csv(output_path / "model_cv_summary.csv", index=False)
-    importance_raw.to_csv(output_path / "permutation_importance_raw.csv", index=False)
-    importance_summary.to_csv(output_path / "permutation_importance_summary.csv", index=False)
+    # Limit serialized precision so identical seeded runs do not create noisy
+    # diffs from platform-level floating-point summation order.
+    csv_options = {"index": False, "float_format": "%.12g"}
+    folds.to_csv(output_path / "fold_metrics.csv", **csv_options)
+    model_summary.to_csv(output_path / "model_cv_summary.csv", **csv_options)
+    importance_raw.to_csv(output_path / "permutation_importance_raw.csv", **csv_options)
+    importance_summary.to_csv(output_path / "permutation_importance_summary.csv", **csv_options)
 
     metadata = {
         "study_role": "post-diagnostic pilot; not a screening or diagnostic model",
