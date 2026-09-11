@@ -1,21 +1,4 @@
-"""
-Linear Regression Model
-=======================
-
-Linear Regression is a simple but powerful baseline model that finds the best 
-linear relationship between features and the target variable.
-
-Advantages:
-- Fast to train
-- Easy to interpret
-- Works well when relationships are roughly linear
-- Shows which features are most important
-
-When to use:
-- As a baseline to compare other models against
-- When model interpretability is important
-- When you have limited data
-"""
+"""Ordinary linear regression for the exploratory log-PSA analysis."""
 
 import sys
 import numpy as np
@@ -45,7 +28,7 @@ def train_linear_regression(data_dict, verbose=True):
     """
     if verbose:
         print("\n" + "="*70)
-        print("🎨 LINEAR REGRESSION MODEL")
+        print(" LINEAR REGRESSION MODEL")
         print("="*70)
         print("\nTraining linear regression model...")
     
@@ -54,7 +37,7 @@ def train_linear_regression(data_dict, verbose=True):
     model.fit(data_dict['X_train_scaled'], data_dict['y_train'])
     
     if verbose:
-        print("✅ Model trained successfully!")
+        print(" Model trained successfully!")
     
     # Make predictions
     y_pred = model.predict(data_dict['X_test_scaled'])
@@ -81,7 +64,7 @@ def analyze_coefficients(model, feature_names):
     """
     import pandas as pd
     
-    print("\n📊 Feature Coefficients (How each feature affects PSA):")
+    print("\n Feature Coefficients (How each feature affects PSA):")
     print("="*70)
     
     coef_df = pd.DataFrame({
@@ -90,7 +73,7 @@ def analyze_coefficients(model, feature_names):
     }).sort_values('Coefficient', key=abs, ascending=False)
     
     print(coef_df.to_string(index=False))
-    print("\n💡 Interpretation:")
+    print("\n Interpretation:")
     print("   • Positive coefficient → feature increases PSA prediction")
     print("   • Negative coefficient → feature decreases PSA prediction")
     print("   • Larger absolute value → stronger influence")
@@ -100,7 +83,7 @@ def analyze_coefficients(model, feature_names):
 
 
 if __name__ == "__main__":
-    print("\n🚀 Running Linear Regression Analysis")
+    print("\n Running Linear Regression Analysis")
     print("="*70)
     
     # Load and prepare data
@@ -114,7 +97,7 @@ if __name__ == "__main__":
     coef_df = analyze_coefficients(model, data_dict['feature_names'])
     
     # Create visualizations
-    print("\n📊 Creating visualizations...")
+    print("\n Creating visualizations...")
     
     plot_feature_importance(
         data_dict['feature_names'], 
@@ -138,5 +121,5 @@ if __name__ == "__main__":
         save=True
     )
     
-    print("\n✅ Linear Regression analysis complete!")
-    print(f"🏆 Final R² Score: {metrics['r2_score']:.4f}")
+    print("\n Linear Regression analysis complete!")
+    print(f" Final R² Score: {metrics['r2_score']:.4f}")

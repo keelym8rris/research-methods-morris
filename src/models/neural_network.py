@@ -1,38 +1,4 @@
-"""
-Neural Network Model
-====================
-
-Neural Networks (also called Deep Learning) are inspired by the human brain.
-They consist of layers of artificial neurons that can learn complex patterns.
-
-Structure:
-    Input Layer → Hidden Layers → Output Layer
-    [Features]  →  [Processing]  → [Prediction]
-
-How it works:
-1. Input layer receives features (age, cancer volume, etc.)
-2. Hidden layers process information through multiple neurons
-3. Output layer produces final prediction (PSA level)
-4. During training, weights are adjusted to minimize error
-
-Advantages:
-- Can learn incredibly complex non-linear patterns
-- State-of-the-art for images, text, and speech
-- Flexible architecture (can be customized)
-- Can improve with more data
-
-Disadvantages:
-- Needs more data to train effectively
-- Harder to interpret ("black box")
-- Requires more computational power
-- Can overfit on small datasets
-- Many hyperparameters to tune
-
-When to use:
-- When you have large amounts of data
-- For complex pattern recognition
-- When other methods plateau in performance
-"""
+"""TensorFlow neural regression for the original single-split analysis."""
 
 import sys
 import numpy as np
@@ -70,7 +36,7 @@ def train_neural_network(data_dict, epochs=100, batch_size=32, verbose=True):
     """
     if verbose:
         print("\n" + "="*70)
-        print("🧠 NEURAL NETWORK MODEL")
+        print(" NEURAL NETWORK MODEL")
         print("="*70)
         print(f"\nBuilding neural network architecture...")
     
@@ -83,7 +49,7 @@ def train_neural_network(data_dict, epochs=100, batch_size=32, verbose=True):
     ])
     
     if verbose:
-        print("\n🏗️ Neural Network Architecture:")
+        print("\n Neural Network Architecture:")
         print("="*70)
         model.summary()
         print("="*70)
@@ -95,7 +61,7 @@ def train_neural_network(data_dict, epochs=100, batch_size=32, verbose=True):
     )
     
     if verbose:
-        print(f"\n🎓 Training neural network for {epochs} epochs...")
+        print(f"\n Training neural network for {epochs} epochs...")
         print("(Network will learn from the data multiple times)")
     
     # Early stopping to prevent overfitting
@@ -117,7 +83,7 @@ def train_neural_network(data_dict, epochs=100, batch_size=32, verbose=True):
     )
     
     if verbose:
-        print("✅ Training complete!")
+        print(" Training complete!")
         print(f"\nFinal training loss: {history.history['loss'][-1]:.4f}")
         print(f"Final validation loss: {history.history['val_loss'][-1]:.4f}")
         print(f"Stopped at epoch: {len(history.history['loss'])}/{epochs}")
@@ -163,7 +129,7 @@ def plot_training_history(history, save=True):
     
     plt.show()
     
-    print("\n📉 Training History:")
+    print("\n Training History:")
     print("   • Both lines decreasing = network is learning!")
     print("   • Training loss < validation loss = normal")
     print("   • If validation loss increases while training decreases = overfitting")
@@ -180,7 +146,7 @@ def analyze_network(model, history):
     history : History object
         Training history
     """
-    print("\n🧠 Neural Network Details:")
+    print("\n Neural Network Details:")
     print("="*70)
     
     # Count parameters
@@ -194,7 +160,7 @@ def analyze_network(model, history):
 
 
 if __name__ == "__main__":
-    print("\n🚀 Running Neural Network Analysis")
+    print("\n Running Neural Network Analysis")
     print("="*70)
     
     # Load and prepare data
@@ -208,7 +174,7 @@ if __name__ == "__main__":
     analyze_network(model, history)
     
     # Create visualizations
-    print("\n📊 Creating visualizations...")
+    print("\n Creating visualizations...")
     
     plot_training_history(history, save=True)
     
@@ -227,11 +193,11 @@ if __name__ == "__main__":
         save=True
     )
     
-    print("\n✅ Neural Network analysis complete!")
-    print(f"🏆 Final R² Score: {metrics['r2_score']:.4f}")
+    print("\n Neural Network analysis complete!")
+    print(f" Final R² Score: {metrics['r2_score']:.4f}")
     
     # Experiment suggestions
-    print("\n💡 Want to experiment? Try different architectures:")
+    print("\n Want to experiment? Try different architectures:")
     print("   # Modify the layers in train_neural_network()")
     print("   # Try: Dense(128), Dense(64), Dense(32), Dense(1)")
     print("   # Or add dropout: Dense(64), Dropout(0.2), Dense(32)...")
