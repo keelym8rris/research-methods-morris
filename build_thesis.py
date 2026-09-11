@@ -1,4 +1,4 @@
-"""Build a readable advisor DOCX from the audited Markdown and Python figures.
+"""Build the thesis DOCX from the manuscript and Python figures.
 IEEE-style numbered references; single-column review layout, not a venue template.
 """
 from pathlib import Path
@@ -57,7 +57,7 @@ def build(output):
             m=re.match(r'!\[([^\]]+)\]\(([^)]+)\)',line)
             p=d.add_paragraph();p.paragraph_format.keep_with_next=True
             pic=p.add_run().add_picture(str((ROOT/'docs'/m.group(2)).resolve()),width=Inches(6.7))
-            pic._inline.docPr.set('descr',m.group(1)+' generated from audited held-out predictions and metrics')
+            pic._inline.docPr.set('descr',m.group(1)+' generated from held-out predictions and metrics')
             continue
         if line.startswith('|'):
             rows=[[c.strip() for c in line.strip('|').split('|')]]
@@ -78,13 +78,13 @@ def build(output):
                 trpr=table.rows[-1]._tr.get_or_add_trPr();no=OxmlElement('w:cantSplit');trpr.append(no)
                 if k==0:trpr.append(OxmlElement('w:tblHeader'))
             d.add_paragraph().paragraph_format.space_after=Pt(1);continue
-        p=d.add_paragraph(style='Caption' if line.startswith(('Figure ','Table I.')) else 'Normal')
+        p=d.add_paragraph(style='Caption' if line.startswith(('Figure ','Table ')) else 'Normal')
         inline(p,line)
         if refs:
             p.paragraph_format.left_indent=Inches(.25);p.paragraph_format.first_line_indent=Inches(-.25)
             for r in p.runs:r.font.size=Pt(10)
     d.core_properties.title=lines[0][2:];d.core_properties.author='Keely Morris'
-    d.core_properties.subject='Prostate data analysis and proposed screening research'
+    d.core_properties.subject='Prostate data analysis and dataset reliability'
     output=Path(output);output.parent.mkdir(parents=True,exist_ok=True);d.save(output);print(output)
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--output',type=Path,default=ROOT.parent/'deliverables/Keely_Morris_IEEE_Thesis_Draft.docx');build(p.parse_args().output)

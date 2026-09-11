@@ -1,4 +1,4 @@
-# Responsible and Interpretable Machine Learning for PSA Prediction and Prostate Cancer Risk Modeling
+# From PSA Prediction to Prostate Cancer Risk: Matching Machine Learning Claims to the Data
 
 Keely Morris
 Department of Computing, East Tennessee State University
@@ -7,7 +7,7 @@ September 2026
 
 ## Abstract
 
-This study examines how the structure of a prostate cancer dataset limits the claims a machine-learning model can support. Part I compares eight regression configurations on a 97-record teaching dataset containing clinical and pathology-related measurements. The outcome is natural-log prostate-specific antigen (PSA). Five-fold cross-validation repeated ten times gives mean root mean squared errors (RMSEs) of 0.731 for ridge regression, 0.733 for ordinary linear regression, and 0.735 for lasso, compared with 1.154 for a training-mean baseline. The small differences between the linear models do not establish that one is reliably superior. Held-out permutation importance for ordinary linear regression identifies log cancer volume as the strongest contributor. These results describe log-PSA prediction within the available sample; they do not validate cancer detection. Part II critically reviews relevant PLCO studies and specifies a future analysis using information available at a defined prediction time. No PLCO patient-level experiment is claimed. Together, the two parts show why model evaluation must consider the population, predictor timing, target, and validation design before connecting numerical performance to a clinical purpose.
+This study examines how the structure of a prostate cancer dataset limits the claims a machine-learning model can support. Part I compares eight regression configurations on a 97-record teaching dataset containing clinical and pathology-related measurements. The outcome is natural-log prostate-specific antigen (PSA). Five-fold cross-validation repeated ten times gives mean root mean squared errors (RMSEs) of 0.731 for ridge regression, 0.733 for ordinary linear regression, and 0.735 for lasso, compared with 1.154 for a training-mean baseline. The small differences between the linear models do not establish that one is reliably superior. Held-out permutation importance for ordinary linear regression identifies log cancer volume as the strongest contributor. These results describe log-PSA prediction within the available sample; they do not validate cancer detection. Part II reviews screening, diagnostic imaging, and prognosis studies and compares the reliability of datasets used before and after diagnosis. No PLCO patient-level experiment is claimed. Together, the two parts show why model evaluation must consider the population, predictor timing, target, and validation design before connecting numerical performance to a clinical purpose.
 
 Index terms: machine learning, PSA, prostate cancer, cross-validation, interpretability, dataset validity.
 
@@ -15,27 +15,44 @@ Index terms: machine learning, PSA, prostate cancer, cross-validation, interpret
 
 I began this project by comparing machine-learning models on a small prostate cancer dataset. As the work developed, the main question became more specific: what do these models actually predict, and does that prediction match the purpose we want to give it? A model trained to estimate PSA from tumor measurements is answering a different question from a model intended to identify cancer before diagnosis.
 
-The clinical study associated with the teaching data measured preoperative PSA in 102 men and examined prostatectomy specimens [1]. The distributed teaching file used here has 97 records and includes eight predictors, log PSA, and an existing train/test marker [2]. These counts describe different source objects. This paper does not assume that the original clinical study enrolled only 97 men or infer an undocumented reason for the teaching subset.
+The distributed teaching file contains 97 records, eight predictors, log PSA, and a historical train/test marker [1]. Its measurements make it useful for comparing regression methods. They also raise a practical question: would these same measurements be available at the point when someone is being screened?
 
-The research question is: How do dataset structure and predictor timing affect the interpretation and limits of machine-learning results in prostate cancer research? Part I addresses model comparison and interpretability in the available dataset. Part II addresses what a screening-oriented study would need to establish before its results could support a different claim.
+The research question is: How do dataset structure and predictor timing affect the interpretation and limits of machine-learning results in prostate cancer research? Part I provides descriptive analysis, compares predictive models, and discusses the strengths and limitations of each algorithm. Part II reviews published work on prostate cancer risk and detection, then examines the reliability of datasets collected at different points in care.
 
-TRIPOD+AI provides reporting guidance for prediction-model studies, including descriptions of participants, predictors, outcomes, evaluation, and access to research materials [3]. PROBAST+AI provides a framework for assessing quality, risk of bias, and applicability [4]. These frameworks inform this study's reporting and critique. They are not certifications that the pilot is clinically valid.
+TRIPOD+AI provides reporting guidance for prediction-model studies, including descriptions of participants, predictors, outcomes, evaluation, and access to research materials [2]. PROBAST+AI provides a framework for assessing quality, risk of bias, and applicability [3]. These frameworks inform this study's reporting and critique. They are not certifications that the pilot is clinically valid.
 
-The contribution is a reproducible computing case study with a clear boundary around its conclusions. It combines an audited comparison, saved held-out predictions, Python figures, and a concrete design for future work. It does not introduce a new learning algorithm, prove that dataset structure causes a particular performance difference, or establish a new screening tool.
+My goal is to connect the computing work to a question that matters: how much can we reasonably learn from the data we have? The contribution is a reproducible model comparison alongside a focused review of how population, measurement timing, and outcome definitions change the meaning of a prediction.
 
-## II Data and evaluation methods
+## II Part I: Descriptive analysis and predictive methods
 
 ### A Dataset and prediction task
 
-The repository contains 97 rows, eight numeric predictors, the numeric outcome lpsa, and the Boolean train field. The audit found no missing values or duplicate rows. Numeric values matched the official teaching file within an absolute tolerance of 0.000000000001, and the split marker matched after converting T/F to Boolean values. The analysis uses the repository CSV and records its SHA-256 hash.
+The repository contains 97 rows, eight numeric predictors, the numeric outcome lpsa, and the Boolean train field. Data checks found no missing values or duplicate rows. Numeric values matched the official teaching file within an absolute tolerance of 0.000000000001, and the split marker matched after converting T/F to Boolean values. The analysis uses the repository CSV and records its SHA-256 hash.
 
 Participants in the file have a mean age of 63.9 years and an age range of 41 to 79. Mean lpsa is 2.478, with a standard deviation of 1.154. These summaries are computed from the repository data. The predictors are lcavol, lweight, age, lbph, svi, lcp, gleason, and pgg45. Several describe tumor burden or pathology. The target is a continuous log-transformed laboratory measurement, not a cancer diagnosis or a probability of disease.
 
-The train column identifies the historical split of 67 training and 30 test observations [2]. It is excluded because it is metadata rather than a patient characteristic. Its presence alone does not prove target leakage or quantify inflation in earlier scores. More generally, leakage concerns information that is not legitimately available for the intended prediction task [5]. Using the pathology predictors for a claim about pre-diagnostic screening would create a timing mismatch even when the statistical train/test split is correct.
+The train column identifies the historical split of 67 training and 30 test observations [1]. It is excluded because it is metadata rather than a patient characteristic. Its presence alone does not prove target leakage or quantify inflation in earlier scores. Using the pathology predictors for a claim about pre-diagnostic screening would create a timing mismatch even when the statistical train/test split is correct.
+
+
+Table I. Descriptive statistics for the 97 observations. Values remain on the scales stored in the dataset.
+
+| Variable | Mean ± SD | Minimum | Maximum |
+|---|---|---|---|
+| lcavol | 1.350 ± 1.179 | -1.347 | 3.821 |
+| lweight | 3.629 ± 0.428 | 2.375 | 4.780 |
+| age | 63.866 ± 7.445 | 41.000 | 79.000 |
+| lbph | 0.100 ± 1.451 | -1.386 | 2.326 |
+| svi | 0.216 ± 0.414 | 0.000 | 1.000 |
+| lcp | -0.179 ± 1.398 | -1.386 | 2.904 |
+| gleason | 6.753 ± 0.722 | 6.000 | 9.000 |
+| pgg45 | 24.381 ± 28.204 | 0.000 | 100.000 |
+| lpsa | 2.478 ± 1.154 | -0.431 | 5.583 |
+
+The mean of the binary svi variable corresponds to 21 of 97 observations with svi = 1. These summaries describe this sample; they are not population estimates of prostate cancer risk.
 
 ### B Model configurations
 
-Sample-size methodology emphasizes overfitting and precision, rather than a universal minimum number of records [6]. This pilot does not claim to meet a clinical model-development sample-size requirement. Eight configurations were evaluated using scikit-learn [7]. Their settings were fixed for this audit, with no search over the reported outer-fold results. This is an exploratory extension of previously inspected work, not a preregistered comparison.
+The small sample limits the precision and generalizability of the comparison. Eight configurations were evaluated using scikit-learn [4]. Their settings were fixed for this comparison, with no search over the reported outer-fold results. This is an exploratory extension of previously inspected work, not a preregistered comparison.
 
 | Model | Fixed configuration |
 |---|---|
@@ -48,7 +65,7 @@ Sample-size methodology emphasizes overfitting and precision, rather than a univ
 | Gradient boosting | 100 trees; learning rate 0.03; depth 2; minimum leaf size 5 |
 | MLP | One hidden layer of 16 ReLU units; L-BFGS; alpha = 1.0; 4,000 iterations maximum |
 
-All linear predictors are standardized within the training fold. The neural network standardizes both predictors and the target using training-fold values, then returns predictions on the original lpsa scale. The audited MLP uses L-BFGS without early stopping. This differs from the July Adam/early-stopping configuration: in that earlier pipeline, scaling preceded the internal validation split. Outer test observations were still excluded, but the internal early-stopping subset was not fully isolated from preprocessing. The revised configuration removes that additional split. Changes in its performance cannot be attributed to the optimizer alone.
+All linear predictors are standardized within the training fold. The neural network standardizes both predictors and the target using training-fold values, then returns predictions on the original lpsa scale. The MLP uses L-BFGS without an internal early-stopping split. Its configuration differs from the neural network in the earlier exploratory analysis, so their results should not be interpreted as an isolated comparison of optimizers.
 
 ### C Cross-validation and metrics
 
@@ -68,7 +85,7 @@ The interpretation folds overlap the evaluation folds. They provide descriptive 
 
 ### A Model comparison
 
-Table I. Repeated cross-validation results, 50 evaluations per model.
+Table II. Repeated cross-validation results, 50 evaluations per model.
 
 | Model | RMSE mean ± SD | MAE mean ± SD | R² mean ± SD |
 |---|---|---|---|
@@ -86,116 +103,131 @@ Ridge has the lowest mean fold RMSE, but its difference from ordinary linear reg
 
 Ordinary linear regression reduces mean fold RMSE by 36.4% relative to predicting the training-fold mean. This is a relative reduction in an error metric, not a 36.4% improvement in diagnosis or patient outcomes. The baseline has negative mean R² because it predicts the training mean rather than the unavailable test-fold mean.
 
-![Figure 1](../results/audited/figures/01_model_performance.png)
+![Figure 1](../results/thesis/figures/01_model_performance.png)
 
-Figure 1. RMSE across the 50 held-out folds. Gray dots are fold results; blue markers and bars show the mean and one standard deviation. The bars describe split variability and are not confidence intervals. Data: results/audited/fold_metrics.csv.
+Figure 1. RMSE across the 50 held-out folds. Gray dots are fold results; blue markers and bars show the mean and one standard deviation. The bars describe split variability and are not confidence intervals. Data: results/thesis/fold_metrics.csv.
 
 ### B Predictive behavior and feature reliance
 
 The ordinary linear model's first-repeat predictions and residuals are shown in Fig. 2. Each point is a patient predicted while held out of fitting. This display shows where the model makes larger errors; it does not demonstrate calibration of a cancer-risk probability.
 
-![Figure 2](../results/audited/figures/02_ols_predictions_residuals.png)
+![Figure 2](../results/thesis/figures/02_ols_predictions_residuals.png)
 
-Figure 2. Ordinary linear regression predictions and residuals from the first five-fold repeat, chosen by repeat number rather than visual performance. Data: results/audited/oof_predictions.csv.
+Figure 2. Ordinary linear regression predictions and residuals from the first five-fold repeat, chosen by repeat number rather than visual performance. Data: results/thesis/oof_predictions.csv.
 
 Mean held-out permutation importance is 0.404 for log cancer volume, 0.108 for seminal vesicle invasion, and 0.080 for log prostate weight. The mean values for the other predictors are smaller. Fig. 3 shows the five fold means, making the variation across test subsets visible without treating 150 shuffles as 150 independent studies.
 
-![Figure 3](../results/audited/figures/03_permutation_importance.png)
+![Figure 3](../results/thesis/figures/03_permutation_importance.png)
 
-Figure 3. Increase in ordinary linear regression RMSE after shuffling each feature. Gold points summarize each held-out fold over 30 shuffles, and blue diamonds show the overall mean. Data: results/audited/permutation_importance_raw.csv.
+Figure 3. Increase in ordinary linear regression RMSE after shuffling each feature. Gold points summarize each held-out fold over 30 shuffles, and blue diamonds show the overall mean. Data: results/thesis/permutation_importance_raw.csv.
 
 The supporting coefficient figure in the repository shows how fitted conditional associations vary across folds. Coefficient signs answer a different question from permutation importance. Neither permits a claim that changing one biological measurement would cause a change in PSA.
 
-### C What changed from the earlier analysis
+### C Strengths and limitations of the algorithms
 
-The July five-model analysis was rerun, and its saved summary values reproduced within numerical tolerance. In that comparison, ordinary linear regression had mean RMSE 0.733 and mean R² 0.535. Those values remain unchanged in the expanded audit. The new comparison adds a mean baseline, ridge, and lasso, and replaces the neural-network training configuration. The revised MLP has mean RMSE 0.814. The earlier statement that the neural network was necessarily the least stable or worst-performing model does not describe this new experiment.
+The model comparison is also a comparison of tradeoffs. The following points describe the methods used here and how their observed performance informs this project. They do not establish a general ranking for other clinical datasets.
 
-## IV Related work and the clinical boundary
-
-The literature review is focused and narrative. It starts with the study suggested by my advisor, follows directly relevant clinical prediction studies, and uses methodological guidance to evaluate their scope. It is not an exhaustive systematic review. Sources are included for the specific populations, outcomes, methods, or principles they support.
-
-A secondary PLCO analysis examined DRE patterns in 34,756 Black and White men using generalized estimating equations [8]. Suspicious DRE findings became more likely closer to diagnosis; the reported interaction odds ratio was 1.230 per year closer to diagnosis. Its methods describe four screening visits, aligned within a ten-year window before or at diagnosis. That is not ten annual examinations for every participant. The study supports investigating longitudinal patterns, but its diagnosis-relative analysis does not independently validate a prospective risk calculator. Using time remaining until a future diagnosis as a deployable predictor would require unavailable information.
-
-A separate study developed one- to five-year cancer-risk models from PLCO and SELECT and evaluated them in 1,790 SABOR participants [9]. The combined model achieved a C-index of 0.76 for any prostate cancer and 0.74 for the paper's higher-grade endpoint, defined as Gleason greater than 7. The authors reported that only 22 higher-grade cases were available in SABOR, preventing evaluation of that endpoint's calibration. This study is a relevant comparator because it defines a future outcome and uses another cohort for evaluation. Its C-index cannot be compared numerically with this pilot's regression R².
-
-Another PLCO study used 8,776 patients already diagnosed with cancer to develop a gradient-boosting model of ten-year prostate cancer mortality [10]. It used a random training/test split and included initial treatment among its predictors. It illustrates an interpretable prognosis task, not early detection. For a prediction supposedly made at diagnosis, treatment information would require a carefully specified availability time. The study's reported performance therefore does not validate this pilot or a pre-diagnostic screening claim.
-
-These studies help explain the boundary of Part I. The original clinical study collected preoperative PSA and subsequently analyzed surgical specimens [1]. Even if pathology measurements predict PSA within that cohort, those measurements do not become available at an earlier screening visit. The pilot also lacks a screening cohort with diagnostic outcomes for both cancer and non-cancer participants. Better RMSE cannot supply the missing outcome, population, or timing information.
-
-## V Proposed PLCO study design
-
-### A Scope and prediction time
-
-Part II contributes a critical review and a proposed protocol. No participant-level PLCO data were obtained or analyzed for this draft. NCI makes documentation available publicly, while access to study data requires an approved project and the applicable data-use agreement [11]. The proposed analysis would need to establish feasibility before making empirical claims.
-
-The proposed primary task is five-year risk of a recorded, confirmed prostate cancer diagnosis among participants without a diagnosis at a defined baseline screening landmark. The landmark would occur when the chosen baseline screening results and questionnaire information are available. A person diagnosed before that point would be excluded. This avoids calling a measurement collected after enrollment a predictor available at enrollment.
-
-NCI's person-level dictionary distinguishes confirmed cancer, diagnosis timing, screening values, and screen-linked biopsy information [12]. The diagnostic-procedure dictionary separately identifies biopsies, procedure dates, and procedure results, and notes that results were collected only on earlier form versions [13]. Consequently, a biopsy-confirmed endpoint cannot be assumed from a biopsy indicator alone. It would require a documented linkage and an assessment of missing procedure results. If that cannot be established, the endpoint must remain recorded confirmed diagnosis.
-
-### B Cohort construction and information timing
-
-| Role | Documented fields | Proposed treatment |
+| Algorithm | Strength in this task | Limitation and observed result |
 |---|---|---|
-| Screening predictors | psa_level0-5; psa_days0-5; dre_result0-3; dre_days0-3 [12] | Use only results available by the landmark. |
-| Diagnosis outcome | pros_cancer; pros_cancer_diagdays [12] | Define an event after the landmark, within five years. |
-| Verification | biopplink0-5 [12]; biop; proc_days; proc_res [13] | Audit linkage and result availability; exclude future workup from predictors. |
-| Validation grouping | plco_id; center [12] | Keep each person's records together; assess center-based validation feasibility. |
+| Ordinary linear regression | Straightforward coefficients and a transparent baseline for associations with log PSA. | Assumes an additive linear relationship in the supplied predictors; correlated variables complicate coefficient interpretation. RMSE 0.733. |
+| Ridge | Shrinks coefficients while retaining all predictors, which can help with correlated measurements. | Results depend on the penalty; the small numerical lead here does not establish superiority. RMSE 0.731. |
+| Lasso | Can shrink some coefficients to zero, allowing a more compact model. | Feature retention can be sensitive to the penalty and correlated predictors. Its RMSE of 0.735 is close to the other linear models. |
+| Decision tree | Represents nonlinear patterns through a sequence of splits. | A single tree can change with the training sample. The constrained tree had the highest RMSE among the fitted predictor-based models: 0.914. |
+| Random forest | Averages many trees and can represent interactions without specifying them individually. | Harder to explain as one equation or rule set. RMSE 0.776 improved on the single tree but not on the linear models. |
+| Gradient boosting | Adds trees sequentially to improve the fitted prediction function. | Tree depth, learning rate, and number of trees require careful choices. The fixed configuration gave RMSE 0.790. |
+| MLP | Can represent nonlinear combinations of the eight predictors. | Scaling, regularization, and optimization choices matter, and individual predictions are less transparent. RMSE 0.814 did not establish an advantage over simpler models. |
+| Training-mean baseline | Shows the error obtained without using patient predictors. | Cannot distinguish between patients within a test fold. RMSE 1.154 provides the reference for assessing added predictive value. |
 
-This table is a proposed use of documented fields, not an implemented extraction. Prior history and questionnaire variables would also need checks against the landmark date. Missing or not-performed tests must be distinguished from negative findings. Repeated records from one participant must remain together during validation.
+For this dataset, additional flexibility did not produce the lowest average error. That is a useful computing result: a more complicated model needs to justify its complexity through evaluation. The close performance of the three linear methods also keeps the interpretation from depending on a single winning label.
 
-People lost before five years without a recorded diagnosis cannot simply be assigned to the negative class. A time-to-event analysis should account for censoring and consider death before diagnosis as a competing event. If a binary five-year analysis is used, its outcome-observation and censoring assumptions must be specified. Model-development guidance discusses defining the intended use, selecting appropriate outcomes, handling missingness, and evaluating clinical usefulness [14]. This protocol applies those principles; it does not claim that merely following a checklist establishes validity.
+## IV Part II: Literature review and dataset reliability
 
-### C Evaluation and contribution
+### A Review scope and risk-factor context
 
-The future study would begin with a transparent regression or survival baseline and compare additional methods only after cohort and outcome definitions are fixed. All imputation, scaling, feature selection, and tuning would occur inside the relevant training partitions. Existing models and predictor sets would be reviewed before proposing another risk calculator, to determine whether external validation or updating would be more useful than new development.
+This is a focused narrative review, not a systematic review. It begins with the PLCO study recommended by my advisor and examines related work on future diagnosis, imaging, prognosis, and prediction-model evaluation. Only sources whose full text was available for inspection are cited. Original research supports study-specific findings; official dataset documentation supports field definitions. The review does not claim to identify every relevant publication or establish novelty over all existing models.
 
-Evaluation would report discrimination and agreement between predicted and observed risks. Calibration should be assessed directly because good ranking does not ensure accurate absolute probabilities [15]. The proposed analysis would also report overall prediction error and uncertainty, with methods appropriate to the outcome and censoring. Temporal, center-based, or external evaluation would be preferred when feasible. Any subgroup comparison would need adequate observations and events.
+The American Cancer Society identifies age, race/ethnicity, family history, and inherited mutations among established risk factors. It describes more mixed or uncertain evidence for several lifestyle and exposure factors [5]. This is background guidance rather than a prediction-model validation study. A risk factor associated with cancer in a population does not automatically become a useful predictor in every dataset, and a model association does not establish causation.
 
-If a specific clinical decision and meaningful risk thresholds are defined, decision-curve analysis could compare net benefit with simpler strategies [16]. This remains a future evaluation step. No calibration curve, screening accuracy, or clinical-benefit graph is generated for Part II because no such predictions exist in the repository.
+### B Screening and future diagnosis
 
-The practical contribution of this chapter is a design that separates baseline information, diagnostic verification, and outcomes. It also identifies a feasibility problem that is easy to overlook: no recorded cancer is not automatically evidence of a negative biopsy. Detection depends partly on who receives diagnostic follow-up, a concern also discussed in the externally evaluated PLCO/SELECT study [9].
+A secondary PLCO analysis examined DRE patterns in 34,756 Black and White men using generalized estimating equations [6]. Suspicious DRE findings became more likely closer to diagnosis; the reported interaction odds ratio was 1.230 per year closer to diagnosis. Its methods describe four screening visits aligned within a ten-year window before or at diagnosis, rather than ten annual examinations for every participant. This supports studying longitudinal patterns. My interpretation is that diagnosis-relative analysis alone does not validate a prospective risk calculator: time remaining until a future diagnosis would be unavailable when predicting for a new patient.
 
-## VI Discussion and limitations
+Gelfond et al. developed one- to five-year risk models from PLCO and SELECT and evaluated them in 1,790 SABOR participants [7]. Their combined model achieved a C-index of 0.76 for any prostate cancer and 0.74 for the higher-grade endpoint, defined as Gleason greater than 7. Only 22 higher-grade cases were available in SABOR, preventing calibration assessment for that endpoint. This study provides a useful comparison because it specifies a future outcome and evaluates predictions in another cohort. Its C-index cannot be compared directly with Part I's regression R².
 
-The strongest empirical conclusion is modest but useful. On these 97 observations and fixed settings, the linear models perform similarly and have lower average log-PSA error than the more flexible alternatives evaluated here. The sample does not establish that linear models are best for prostate cancer research generally. No hyperparameter search, independent external validation, or prospective assessment was performed. Previous exploration of the same dataset also limits how confirmatory this comparison can be.
+### C Imaging and prognosis answer different questions
 
-Repeated cross-validation makes split sensitivity visible. It does not create new patients, remove selection bias, or turn a small retrospective dataset into a screening population. The smallest errors are observed among several models whose performance is close; their ranking should not be treated as a statistically established hierarchy. The experiment measures associations, and the available variables cannot support a causal analysis or a credible evaluation of screening fairness across populations.
+Bibault et al. used 8,776 patients already diagnosed with prostate cancer to develop a gradient-boosting model for ten-year prostate cancer mortality [8]. The study used a random training/test split and included initial treatment among its predictors. It therefore concerns prognosis after diagnosis. My interpretation is that any use at the moment of diagnosis would require checking when treatment information becomes available. Its findings do not validate a screening model.
 
-The interpretability analysis helps connect the computation to the data's clinical context. The linear model relies most strongly on cancer volume, with additional reliance on invasion and prostate weight. These measurements help explain the result, but they also show why the model should not be presented as an early-detection system. Calling the target log PSA and keeping the original clinical sample separate from the teaching subset are small reporting choices with substantial consequences for the meaning of the paper.
+Yi et al. studied machine learning for lesions that were not visually apparent on 68Ga-PSMA-11 PET/CT [9]. Their retrospective study used 64 patients for training and 36 from another institution for external testing. The reported external AUCs were 0.903 for standard PET, 0.856 for delayed PET, and 0.925 for the combined model. These results require attention to the analysis unit: the classifications were evaluated on half-prostate regions, and fewer patients had delayed scans. This selected diagnostic-imaging sample is different from a general screening population. The study contributes evidence about a specific imaging problem, not proof of population-wide early detection.
 
-Part II is limited by the lack of a new PLCO experiment. The review and protocol provide a reasoned next step, not evidence that the proposed model works. Historical screening practices, follow-up patterns, incomplete verification, missing data, and transportability would all need assessment in a completed study. The present work makes no claim of novelty over all published risk models or readiness for patient care.
+The chapter by Sobecki, Jóźwiak, and Mykhalevych in Digital Interaction and Machine Intelligence compared a CNN with six radiologists using 32 selected prostate lesions [10]. Raw CNN AUC was 0.83, compared with 0.80 for experienced readers; that difference was not statistically significant. The authors also combined model and reader predictions computationally. That experiment should not be described as a prospective trial of clinicians using the system. The small, selected lesion sample limits broader conclusions about clinical performance.
 
-## VII Conclusion
+### D What makes a dataset reliable for its intended question?
 
-This project shows what can be learned from the available prostate dataset and where that evidence stops. Ridge, ordinary linear regression, and lasso have similar repeated-validation performance for predicting log PSA. The repository supports that finding with saved predictions, metrics, and reproducible figures. It does not support a claim that these models detect cancer early.
+Reliability depends on whether the data support the proposed use. A dataset can be suitable for one task and unsuitable for another without being intrinsically poor quality.
 
-The connection between the two thesis parts is the prediction question itself. Part I evaluates a clearly defined task using the data I have. Part II explains how the data and evaluation would need to change before addressing future diagnosis. Responsible machine learning requires both sound computation and a conclusion that matches the information actually available.
+| Dataset setting | Question it can address | Main issue to examine |
+|---|---|---|
+| Part I teaching data | How well can the supplied measurements predict log PSA within this sample? | Small sample, pathology-related predictors, and no screening diagnosis outcome. |
+| Prediagnostic screening cohort | What is the risk of a subsequent recorded diagnosis? | Predictor timing, follow-up duration, missing tests, and how diagnoses are verified. |
+| Diagnostic imaging cohort | Can a model classify a selected lesion or region? | Patient versus lesion units, patient-level separation, reference standard, and selection of cases. |
+| Cohort of diagnosed patients | What outcomes occur after diagnosis? | Availability of treatment variables, outcome horizon, censoring, and changes in care. |
+
+NCI provides public PLCO documentation, while participant-level access requires an approved project and the applicable data-use agreement [11]. The person-level dictionary separates screening results and dates from confirmed cancer, diagnosis timing, and screen-linked biopsy information [12]. The diagnostic-procedure dictionary separately records biopsies, procedure dates, and procedure results; results were collected only on earlier form versions [13]. A biopsy flag alone therefore cannot establish a positive or negative biopsy result. Missing results must not be treated as negative findings.
+
+This distinction connects directly to Part I. Its tumor measurements may be informative for estimating PSA while being unavailable at an earlier screening visit. A sound train/test split cannot repair a mismatch between predictor timing and intended use. Likewise, no recorded cancer during incomplete follow-up is not necessarily evidence that a participant was cancer-free for the whole prediction period.
+
+Model-development guidance emphasizes defining the intended use, predictors, outcomes, missing-data approach, and evaluation strategy [14]. For risk models, discrimination and calibration answer different questions: good ranking does not establish accurate absolute probabilities [15]. Decision-curve analysis can assess net benefit at specified thresholds when a concrete clinical decision is defined [16]. Part I contains neither risk probabilities nor a screening decision analysis, so these are evaluation considerations for the reviewed and potential future work.
+
+### E Possible extension using PLCO
+
+A new PLCO analysis would be an extension of this chapter. One possible question is five-year risk of a recorded confirmed prostate cancer diagnosis among participants without a diagnosis at a defined screening landmark. Only information available by that landmark would enter the predictors. Repeat records would remain grouped by participant during validation, and people with incomplete follow-up would require an explicit censoring strategy.
+
+Before fitting models, the work would need to establish access, usable field definitions, diagnostic verification, and adequate observations and events. Existing models should be reviewed to determine whether external validation or model updating would add more value than another new model. No participant-level PLCO data were analyzed in this project. The completed contribution of Part II is the review and comparison of dataset reliability.
+
+## V Discussion and limitations
+
+The strongest empirical finding is that the three linear models perform similarly and have lower average log-PSA error than the more flexible alternatives evaluated here. This conclusion is restricted to 97 observations, the supplied predictors, and fixed settings. No hyperparameter search, independent external validation, or prospective assessment was performed. Earlier exploration of the same dataset also limits how confirmatory this comparison can be.
+
+Repeated cross-validation makes sensitivity to the split visible. It does not create new patients or remove selection bias. Standard deviations across overlapping folds should not be used as independent-study uncertainty estimates. The analysis also does not establish causal effects or provide a credible assessment of screening fairness across populations.
+
+The interpretation results help explain both the model's performance and its limits. Cancer volume, seminal vesicle invasion, and prostate weight contribute to predicting log PSA in this sample. Their relevance does not make the model suitable for an earlier screening decision. The measurement itself and the time it becomes available matter as much as its statistical association with the target.
+
+Part II makes that issue concrete through published examples. A future diagnosis, a suspicious lesion, and mortality after diagnosis are different outcomes. Their models cannot be judged by lining up unrelated performance numbers. Cohort selection, verification, timing, and validation determine what each result means.
+
+What I take from the two parts is that building the model is only part of the research. The next responsibility is explaining what its result can support. This project contributes a reproducible computing analysis and a focused clinical-data critique; it does not claim a new screening tool or a novel algorithm.
+
+## VI Conclusion
+
+I started by asking which models could best predict PSA from the data available to me. The results favor a careful answer: ridge, ordinary linear regression, and lasso perform similarly, and the simpler methods are competitive in this small sample. Saved predictions, metrics, and Python-generated figures support that finding.
+
+The literature review carries the question forward. Before a model can address prostate cancer risk or detection, its population, predictors, timing, and outcome must match that purpose. Part I demonstrates the computing methods; Part II explains the conditions under which similar methods could answer a clinically different question.
 
 ## Reproducibility
 
-The audited analysis is generated by run_audited_analysis.py, and the four figures are generated by make_thesis_figures.py. Results are stored under results/audited/. The earlier five-model results remain under results/research/. Exact settings, package versions, data and script hashes, and warnings are recorded in run_metadata.json. The repository was private at review time; readers need access to inspect the code. The current advisor draft is tracked in [the research pull request](https://github.com/keelym8rris/research-methods-morris/pull/1). The accompanying claim-to-source audit identifies verification depth and limits for each cited source.
+The analysis is implemented in run_thesis_analysis.py, and make_thesis_figures.py creates four figures from saved results in results/thesis/. The earlier five-model results remain in results/research/. The saved run metadata identifies the original computation, package versions, settings, data hash, and warnings. File organization and manuscript revisions do not represent a new model-fitting experiment. The code, draft, and numerical evidence are available in [the project repository](https://github.com/keelym8rris/research-methods-morris); repository access may be required.
 
 ## References
 
-[1] T. A. Stamey et al., “Prostate specific antigen in the diagnosis and treatment of adenocarcinoma of the prostate. II. Radical prostatectomy treated patients,” J. Urol., vol. 141, no. 5, pp. 1076–1083, 1989, doi: 10.1016/S0022-5347(17)41175-X. [Read source](https://pubmed.ncbi.nlm.nih.gov/2468795/).
+[1] T. Hastie, “Prostate data info,” The Elements of Statistical Learning datasets. Accessed: Sep. 11, 2026. [Online]. Available: [Read source](https://hastie.su.domains/ElemStatLearn/datasets/prostate.info.txt).
 
-[2] T. Hastie, “Prostate data info,” The Elements of Statistical Learning datasets. Accessed: Sep. 11, 2026. [Online]. Available: [Read source](https://hastie.su.domains/ElemStatLearn/datasets/prostate.info.txt).
+[2] G. S. Collins et al., “TRIPOD+AI statement: Updated guidance for reporting clinical prediction models that use regression or machine learning methods,” BMJ, vol. 385, Art. no. e078378, 2024, doi: 10.1136/bmj-2023-078378. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC11019967/).
 
-[3] G. S. Collins et al., “TRIPOD+AI statement: Updated guidance for reporting clinical prediction models that use regression or machine learning methods,” BMJ, vol. 385, Art. no. e078378, 2024, doi: 10.1136/bmj-2023-078378. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC11019967/).
+[3] K. G. M. Moons et al., “PROBAST+AI: An updated quality, risk of bias, and applicability assessment tool for prediction models using regression or artificial intelligence methods,” BMJ, vol. 388, Art. no. e082505, 2025, doi: 10.1136/bmj-2024-082505. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC11931409/).
 
-[4] K. G. M. Moons et al., “PROBAST+AI: An updated quality, risk of bias, and applicability assessment tool for prediction models using regression or artificial intelligence methods,” BMJ, vol. 388, Art. no. e082505, 2025, doi: 10.1136/bmj-2024-082505. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC11931409/).
+[4] F. Pedregosa et al., “Scikit-learn: Machine learning in Python,” J. Mach. Learn. Res., vol. 12, pp. 2825–2830, 2011. [Read source](https://jmlr.org/papers/volume12/pedregosa11a/pedregosa11a.pdf).
 
-[5] S. Kaufman, S. Rosset, C. Perlich, and O. Stitelman, “Leakage in data mining: Formulation, detection, and avoidance,” ACM Trans. Knowl. Discov. Data, vol. 6, no. 4, pp. 1–21, Dec. 2012, doi: 10.1145/2382577.2382579. [Read source](https://dl.acm.org/doi/10.1145/2382577.2382579).
+[5] American Cancer Society, “Prostate cancer risk factors,” Nov. 22, 2023. Accessed: Sep. 11, 2026. [Online]. Available: [Read source](https://www.cancer.org/cancer/types/prostate-cancer/causes-risks-prevention/risk-factors.html).
 
-[6] R. D. Riley et al., “Minimum sample size for developing a multivariable prediction model: Part I—Continuous outcomes,” Stat. Med., vol. 38, no. 7, pp. 1262–1275, 2019, doi: 10.1002/sim.7993. [Read source](https://doi.org/10.1002/sim.7993).
+[6] K. Guan et al., “Ten-year trends in digital rectal exam results and prostate cancer detection: Insights from the PLCO trial,” Res. Rep. Urol., vol. 17, pp. 309–320, 2025, doi: 10.2147/RRU.S542550. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC12405719/).
 
-[7] F. Pedregosa et al., “Scikit-learn: Machine learning in Python,” J. Mach. Learn. Res., vol. 12, pp. 2825–2830, 2011. [Read source](https://jmlr.org/papers/v12/pedregosa11a.html).
+[7] J. A. Gelfond et al., “Prediction of future risk of any and higher-grade prostate cancer based on the PLCO and SELECT trials,” BMC Urol., vol. 22, Art. no. 45, 2022, doi: 10.1186/s12894-022-00986-w. [Read source](https://link.springer.com/article/10.1186/s12894-022-00986-w).
 
-[8] K. Guan et al., “Ten-year trends in digital rectal exam results and prostate cancer detection: Insights from the PLCO trial,” Res. Rep. Urol., vol. 17, pp. 309–320, 2025, doi: 10.2147/RRU.S542550. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC12405719/).
+[8] J.-E. Bibault et al., “Development and validation of an interpretable artificial intelligence model to predict 10-year prostate cancer mortality,” Cancers, vol. 13, no. 12, Art. no. 3064, 2021, doi: 10.3390/cancers13123064. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC8234681/).
 
-[9] J. A. Gelfond et al., “Prediction of future risk of any and higher-grade prostate cancer based on the PLCO and SELECT trials,” BMC Urol., vol. 22, Art. no. 45, 2022, doi: 10.1186/s12894-022-00986-w. [Read source](https://link.springer.com/article/10.1186/s12894-022-00986-w).
+[9] Z. Yi et al., “Machine learning-based prediction of invisible intraprostatic prostate cancer lesions on 68Ga-PSMA-11 PET/CT in patients with primary prostate cancer,” Eur. J. Nucl. Med. Mol. Imaging, vol. 49, pp. 1523–1534, 2022, doi: 10.1007/s00259-021-05631-6. [Read source](https://doi.org/10.1007/s00259-021-05631-6).
 
-[10] J.-E. Bibault et al., “Development and validation of an interpretable artificial intelligence model to predict 10-year prostate cancer mortality,” Cancers, vol. 13, no. 12, Art. no. 3064, 2021, doi: 10.3390/cancers13123064. [Read source](https://pmc.ncbi.nlm.nih.gov/articles/PMC8234681/).
+[10] P. Sobecki, R. Jóźwiak, and I. Mykhalevych, “Performance of deep CNN and radiologists in prostate cancer classification: A comparative pilot study,” in Digital Interaction and Machine Intelligence, C. Biele et al., Eds., Lecture Notes in Networks and Systems, vol. 710. Cham, Switzerland: Springer, 2023, pp. 85–92, doi: 10.1007/978-3-031-37649-8_9. [Read source](https://link.springer.com/content/pdf/10.1007/978-3-031-37649-8_9.pdf).
 
 [11] National Cancer Institute, “Prostate datasets,” Cancer Data Access System. Accessed: Sep. 11, 2026. [Online]. Available: [Read source](https://cdas.cancer.gov/datasets/plco/20/).
 

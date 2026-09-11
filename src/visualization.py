@@ -31,7 +31,7 @@ def save_figure(filename, dpi=300):
     os.makedirs('results/figures', exist_ok=True)
     filepath = os.path.join('results', 'figures', filename)
     plt.savefig(filepath, dpi=dpi, bbox_inches='tight')
-    print(f"💾 Figure saved: {filepath}")
+    print(f" Figure saved: {filepath}")
 
 
 def plot_data_distribution(data, save=True):

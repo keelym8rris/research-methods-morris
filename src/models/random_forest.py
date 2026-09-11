@@ -1,33 +1,4 @@
-"""
-Random Forest Model
-===================
-
-Random Forest is an ensemble method that combines many decision trees to make
-more robust and accurate predictions. Think of it as "wisdom of the crowd".
-
-How it works:
-1. Creates many decision trees (typically 100+)
-2. Each tree is trained on a random subset of data
-3. Each tree makes a prediction
-4. Final prediction = average of all trees
-
-Advantages:
-- Usually more accurate than a single decision tree
-- Less prone to overfitting
-- Handles non-linear relationships well
-- Works well "out of the box"
-- Provides feature importance rankings
-
-Disadvantages:
-- Slower to train (many trees)
-- Less interpretable than a single tree
-- Can be memory-intensive
-
-When to use:
-- When you want high accuracy
-- When you have sufficient data
-- As a strong baseline for many problems
-"""
+"""Random-forest regression for the exploratory log-PSA analysis."""
 
 import sys
 import numpy as np
@@ -64,7 +35,7 @@ def train_random_forest(data_dict, n_estimators=100, max_depth=10,
     """
     if verbose:
         print("\n" + "="*70)
-        print("🌲 RANDOM FOREST MODEL")
+        print(" RANDOM FOREST MODEL")
         print("="*70)
         print(f"\nTraining random forest with {n_estimators} trees...")
     
@@ -78,7 +49,7 @@ def train_random_forest(data_dict, n_estimators=100, max_depth=10,
     model.fit(data_dict['X_train_scaled'], data_dict['y_train'])
     
     if verbose:
-        print(f"✅ Successfully trained {n_estimators} trees!")
+        print(f" Successfully trained {n_estimators} trees!")
     
     # Make predictions
     y_pred = model.predict(data_dict['X_test_scaled'])
@@ -105,14 +76,14 @@ def analyze_forest(model, feature_names):
     """
     import pandas as pd
     
-    print("\n🌲 Random Forest Details:")
+    print("\n Random Forest Details:")
     print("="*70)
     print(f"   Number of trees: {model.n_estimators}")
     print(f"   Max depth per tree: {model.max_depth}")
     print(f"   Number of features considered per split: {model.max_features}")
     print("="*70)
     
-    print("\n📊 Feature Importance (averaged across all trees):")
+    print("\n Feature Importance (averaged across all trees):")
     print("="*70)
     
     importance_df = pd.DataFrame({
@@ -121,14 +92,14 @@ def analyze_forest(model, feature_names):
     }).sort_values('Importance', ascending=False)
     
     print(importance_df.to_string(index=False))
-    print("\n💡 Higher values = feature is more important for predictions")
+    print("\n Higher values = feature is more important for predictions")
     print("="*70)
     
     return importance_df
 
 
 if __name__ == "__main__":
-    print("\n🚀 Running Random Forest Analysis")
+    print("\n Running Random Forest Analysis")
     print("="*70)
     
     # Load and prepare data
@@ -142,7 +113,7 @@ if __name__ == "__main__":
     importance_df = analyze_forest(model, data_dict['feature_names'])
     
     # Create visualizations
-    print("\n📊 Creating visualizations...")
+    print("\n Creating visualizations...")
     
     plot_feature_importance(
         data_dict['feature_names'], 
@@ -166,10 +137,10 @@ if __name__ == "__main__":
         save=True
     )
     
-    print("\n✅ Random Forest analysis complete!")
-    print(f"🏆 Final R² Score: {metrics['r2_score']:.4f}")
+    print("\n Random Forest analysis complete!")
+    print(f" Final R² Score: {metrics['r2_score']:.4f}")
     
     # Experiment suggestions
-    print("\n💡 Want to experiment? Try different parameters:")
+    print("\n Want to experiment? Try different parameters:")
     print("   from src.models.random_forest import train_random_forest")
     print("   train_random_forest(data_dict, n_estimators=200, max_depth=15)")

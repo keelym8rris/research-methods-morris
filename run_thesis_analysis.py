@@ -1,8 +1,9 @@
-"""September thesis audit. Run from any directory; no network required.
+"""Repeated cross-validation for the thesis. Run from any directory; no network required.
 Fixed exploratory settings, common outer folds, natural-log PSA errors.
 """
 from pathlib import Path
 import argparse, hashlib, json, platform, warnings
+from datetime import date
 import numpy as np
 import pandas as pd
 import sklearn
@@ -21,10 +22,9 @@ ROOT=Path(__file__).resolve().parent
 FEATURES=['lcavol','lweight','age','lbph','svi','lcp','gleason','pgg45']
 SEED=42
 
-def audited_models():
+def thesis_models():
     models=build_models(SEED)
-    # Preserve July non-neural settings. Remove the internal early-stopping
-    # subset whose observations entered the scaler fit in the previous MLP.
+    # Use fixed settings and train-fold scaling for the neural model.
     models.pop('Neural Network')
     models['MLP (L-BFGS)']=TransformedTargetRegressor(
         regressor=make_pipeline(StandardScaler(),MLPRegressor(
@@ -51,7 +51,7 @@ def run(output):
     if data.duplicated().any():raise ValueError('Duplicate records require review')
     split_records=[];predictions=[];fold_metrics=[];coefs=[];warning_records=[]
     splits=list(RepeatedKFold(n_splits=5,n_repeats=10,random_state=SEED).split(X))
-    models=audited_models()
+    models=thesis_models()
     for k,(train,test) in enumerate(splits):
         repeat,fold=k//5+1,k%5+1
         split_records.append({'repeat':repeat,'fold':fold,'train_rows':(train+1).tolist(),'test_rows':(test+1).tolist()})
@@ -82,10 +82,10 @@ def run(output):
     opt={'index':False,'float_format':'%.12g'}
     tables={'fold_metrics':folds,'model_cv_summary':summary,'oof_predictions':preds,'repeat_metrics':pd.DataFrame(repeat_metrics),'permutation_importance_raw':raw,'permutation_importance_summary':importance,'coefficients_by_fold':cf,'coefficient_summary':cfsummary,'descriptive_statistics':data[FEATURES+['lpsa']].describe().T.reset_index(names='variable')}
     for name,frame in tables.items():frame.to_csv(output/(name+'.csv'),**opt)
-    metadata={'audit_date':'2026-09-11','base_commit':'2cb40f8e4b50f2f1f1681f98405d3e5e9680a703','dataset_sha256':hashlib.sha256(data_path.read_bytes()).hexdigest(),'analysis_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'patients':len(data),'predictors':FEATURES,'excluded_columns':['train','lpsa'],'missing_values':int(data.isna().sum().sum()),'duplicate_rows':int(data.duplicated().sum()),'target':'natural-log PSA (lpsa), not cancer risk','validation':'5 folds x 10 repeats; identical splits for all models','seed':SEED,'ranking':'mean fold RMSE; exploratory comparison, no statistical superiority claim','importance_model':'fixed OLS; first five folds overlap evaluation; descriptive, not independent validation','settings':{name:repr(model) for name,model in models.items()},'python':platform.python_version(),'numpy':np.__version__,'pandas':pd.__version__,'sklearn':sklearn.__version__,'warnings':warning_records}
+    metadata={'analysis_date':date.today().isoformat(),'dataset_sha256':hashlib.sha256(data_path.read_bytes()).hexdigest(),'analysis_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'patients':len(data),'predictors':FEATURES,'excluded_columns':['train','lpsa'],'missing_values':int(data.isna().sum().sum()),'duplicate_rows':int(data.duplicated().sum()),'target':'natural-log PSA (lpsa), not cancer risk','validation':'5 folds x 10 repeats; identical splits for all models','seed':SEED,'ranking':'mean fold RMSE; exploratory comparison, no statistical superiority claim','importance_model':'fixed OLS; first five folds overlap evaluation; descriptive, not independent validation','settings':{name:repr(model) for name,model in models.items()},'python':platform.python_version(),'numpy':np.__version__,'pandas':pd.__version__,'sklearn':sklearn.__version__,'warnings':warning_records}
     (output/'run_metadata.json').write_text(json.dumps(metadata,indent=2)+'\n')
     (output/'fold_assignments.json').write_text(json.dumps(split_records,indent=2)+'\n')
     print(summary.to_string(index=False));print('Warnings:',len(warning_records))
     return summary
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--output-dir',type=Path,default=ROOT/'results/audited');run(p.parse_args().output_dir)
+    p=argparse.ArgumentParser();p.add_argument('--output-dir',type=Path,default=ROOT/'results/thesis');run(p.parse_args().output_dir)

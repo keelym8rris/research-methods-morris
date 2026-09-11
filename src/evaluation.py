@@ -55,12 +55,12 @@ def print_evaluation(metrics):
         Dictionary of metrics from evaluate_model()
     """
     print("\n" + "="*70)
-    print(f"📊 {metrics['model_name'].upper()} PERFORMANCE")
+    print(f" {metrics['model_name'].upper()} PERFORMANCE")
     print("="*70)
-    print(f"\n📉 Mean Squared Error (MSE):  {metrics['mse']:.4f}")
-    print(f"📉 Root Mean Squared Error:   {metrics['rmse']:.4f}")
-    print(f"📉 Mean Absolute Error (MAE): {metrics['mae']:.4f}")
-    print(f"📈 R² Score:                  {metrics['r2_score']:.4f} ({metrics['r2_score']*100:.1f}%)")
+    print(f"\n Mean Squared Error (MSE):  {metrics['mse']:.4f}")
+    print(f" Root Mean Squared Error:   {metrics['rmse']:.4f}")
+    print(f" Mean Absolute Error (MAE): {metrics['mae']:.4f}")
+    print(f" R² Score:                  {metrics['r2_score']:.4f} ({metrics['r2_score']*100:.1f}%)")
     
     print("\nInterpret with the validation design, uncertainty, sample size, and study role.")
     print("This post-diagnostic pilot does not establish screening or clinical utility.")

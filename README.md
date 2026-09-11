@@ -1,23 +1,22 @@
-# PSA prediction and the limits of clinical claims
+# From PSA prediction to prostate cancer risk
 
 Keely Morris · Computing · East Tennessee State University · Undergraduate Research Honors Program
 
-This two-part thesis asks how dataset structure and predictor timing affect what machine-learning results can support. The current advisor draft is on `codex/advisor-feedback-thesis` in [draft PR #1](https://github.com/keelym8rris/research-methods-morris/pull/1).
+I started this project by comparing models for predicting log PSA. The thesis connects that computing work to a broader question: what does a prediction mean when the population, measurements, and timing change?
 
-**Part I is implemented:** eight regression configurations predict natural-log PSA in a 97-record teaching dataset. **Part II is a critical literature review and proposed PLCO study:** no PLCO patient-level experiment has been performed.
+Part I contains descriptive analysis and an eight-model regression comparison using 97 observations. Part II is a focused literature review and a discussion of dataset reliability before and after diagnosis. A new PLCO experiment is possible future work.
 
-## Start here
+## Manuscript and results
 
-- [Advisor draft with 16 IEEE-style references and reading links](docs/thesis_draft.md)
-- [Source and claim audit](docs/source_claim_audit.md)
-- [Code/data audit and remaining limitations](docs/audit_report.md)
-- [How the two parts fit together](docs/how_it_ties_together.md)
-- [Advisor feedback and scope decisions](docs/advisor_feedback_plan.md)
-- [Python figures: PNG, PDF, SVG](results/audited/figures)
+- [Thesis draft with numbered IEEE-style references and reading links](docs/thesis_draft.md)
+- [Python-generated figures in PNG, PDF, and SVG](results/thesis/figures)
+- [Model comparison](results/thesis/model_cv_summary.csv)
+- [Descriptive statistics](results/thesis/descriptive_statistics.csv)
+- [Saved predictions, fold assignments, and supporting results](results/thesis)
 
 ## Main finding
 
-| Model | Mean fold RMSE, log PSA | Mean fold R² |
+| Model | Mean fold RMSE | Mean fold R² |
 |---|---:|---:|
 | Ridge | 0.731 | 0.538 |
 | Ordinary linear regression | 0.733 | 0.535 |
@@ -28,30 +27,34 @@ This two-part thesis asks how dataset structure and predictor timing affect what
 | Decision tree | 0.914 | 0.289 |
 | Training-mean baseline | 1.154 | -0.087 |
 
-All models use the same 5-fold splits repeated 10 times. Ridge, OLS, and lasso perform similarly; these differences do not establish a statistically superior model. Pathology-related predictors help estimate PSA within this sample. These results do not demonstrate cancer detection or clinical usefulness.
+Errors are in log-PSA units. All models use the same five-fold partitions repeated ten times. The linear methods perform similarly; their small differences do not establish a statistically superior model. These results concern PSA prediction in this sample and do not demonstrate cancer detection.
 
-## Reproduce from the repository root
+## Reproduce the analysis
 
-Use Python 3.12 in a fresh virtual environment:
+Use Python 3.12 in a fresh virtual environment, then run from the repository root:
 
 ```bash
-python -m pip install -r requirements-audit.txt
-python run_audited_analysis.py
+python -m pip install -r requirements-research.txt
+python run_thesis_analysis.py
 python make_thesis_figures.py
-PYTHONPATH=. python tests/verify_audited_outputs.py
-python build_advisor_draft.py --output outputs/Keely_Morris_IEEE_Thesis_Draft.docx
+python tests/verify_results.py
+python build_thesis.py --output outputs/Keely_Morris_IEEE_Thesis_Draft.docx
 ```
 
-`run_audited_analysis.py` writes `results/audited/`. `make_thesis_figures.py` reads saved CSVs and does not refit models. The Word builder uses a plain single-column review layout with IEEE-style numbered references; it is not a specific journal or ETSU submission template. `build_ieee_paper.py` remains a compatibility entry point to the same builder.
+The figure script reads saved CSVs without fitting models. The Word builder produces a plain, single-column review draft with IEEE-style references; it is not a journal or ETSU submission template.
 
-## Evidence and validation
+The saved results contain 400 fold evaluations and 7,760 held-out predictions for the same 97 observations. Repeated predictions do not increase the number of independent patients. Reported standard deviations describe variation across overlapping folds, not confidence intervals.
 
-`results/audited/` includes 400 fold-metric rows, 7,760 held-out prediction rows, split membership, repeat-level metrics, descriptive summaries, OLS coefficients, and permutation importance. The predictions represent repeated evaluations of 97 people, not thousands of independent patients. Standard deviations describe split variation, not confidence intervals. `run_metadata.json` records settings, versions, warnings and hashes.
+The verification script checks prediction membership, recomputes fold metrics, checks the mean baseline, and examines training-only scaling. Run metadata preserves the provenance of the saved computation. The current cleanup changes names and documentation; it does not represent a new fitting run.
 
-The verification script independently recomputes metrics from saved predictions, checks test coverage and train/test disjointness, verifies the mean baseline, and checks training-only scaling and OLS predictions on a fold.
+## Sources and scope
 
-## Earlier work
+The manuscript cites only sources whose full text was available for inspection. Research findings are tied to the population and outcome actually studied. Official NCI documentation supports PLCO field definitions; the American Cancer Society supplies risk-factor background. The supplied PET/CT article was read in full through the provided copy; its publisher link may require institutional access.
 
-`run_research_analysis.py` and `results/research/` preserve the earlier five-model experiment. Its original summary was reproduced during this audit. The `src/models/` implementations and tutorial notebook are educational single-split examples. They are not the source of current thesis results; stale notebook outputs were cleared. The separate `improvements` branch was reviewed as exploratory work and remains separate.
+Part II is a narrative review, not a systematic review or a new PLCO experiment. The distinctions among PSA prediction, future diagnosis, lesion classification, and postdiagnosis prognosis are central to the thesis.
 
-The original clinical publication describes 102 men; the distributed teaching file contains 97 observations. Do not conflate those counts. The `train` field is historical split metadata and is excluded from predictors. Data are compared to [the official teaching file](https://hastie.su.domains/ElemStatLearn/datasets/prostate.data). See the audit for details and source access limitations.
+## Earlier analysis
+
+`run_research_analysis.py` and `results/research/` retain the earlier five-model comparison. The notebook and `src/models/` contain the original single-split examples. Current thesis claims use `results/thesis/`.
+
+The `train` column is historical split metadata, not a predictor. [The original teaching-data description](https://hastie.su.domains/ElemStatLearn/datasets/prostate.info.txt) documents the distributed dataset.

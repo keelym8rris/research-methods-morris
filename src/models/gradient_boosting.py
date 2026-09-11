@@ -1,34 +1,4 @@
-"""
-Gradient Boosting Model
-=======================
-
-Gradient Boosting is a powerful ensemble method that builds trees sequentially,
-where each new tree corrects the errors of previous trees.
-
-How it works:
-1. Build tree #1 → Make predictions → Calculate errors
-2. Build tree #2 to predict those errors
-3. Combine tree #1 and tree #2
-4. Build tree #3 to predict remaining errors
-5. Repeat until errors are minimized
-
-Advantages:
-- Often very accurate (wins many ML competitions!)
-- Good at learning complex patterns
-- Provides feature importance
-- Can handle different types of features
-
-Disadvantages:
-- Slower to train (trees built sequentially)
-- More prone to overfitting than Random Forest
-- Requires careful tuning of hyperparameters
-- More sensitive to noisy data
-
-When to use:
-- When you want maximum accuracy
-- When you have time to tune hyperparameters
-- For structured/tabular data (often outperforms neural networks)
-"""
+"""Gradient-boosting regression for the exploratory log-PSA analysis."""
 
 import sys
 import numpy as np
@@ -67,7 +37,7 @@ def train_gradient_boosting(data_dict, n_estimators=100, learning_rate=0.1,
     """
     if verbose:
         print("\n" + "="*70)
-        print("🚀 GRADIENT BOOSTING MODEL")
+        print(" GRADIENT BOOSTING MODEL")
         print("="*70)
         print(f"\nTraining gradient boosting with {n_estimators} stages...")
         print("(This learns sequentially, so may take a moment...)")
@@ -82,7 +52,7 @@ def train_gradient_boosting(data_dict, n_estimators=100, learning_rate=0.1,
     model.fit(data_dict['X_train_scaled'], data_dict['y_train'])
     
     if verbose:
-        print("✅ Gradient boosting trained successfully!")
+        print(" Gradient boosting trained successfully!")
     
     # Make predictions
     y_pred = model.predict(data_dict['X_test_scaled'])
@@ -109,7 +79,7 @@ def analyze_boosting(model, feature_names):
     """
     import pandas as pd
     
-    print("\n🚀 Gradient Boosting Details:")
+    print("\n Gradient Boosting Details:")
     print("="*70)
     print(f"   Number of boosting stages: {model.n_estimators}")
     print(f"   Learning rate: {model.learning_rate}")
@@ -117,7 +87,7 @@ def analyze_boosting(model, feature_names):
     print(f"   Training score: {model.train_score_[-1]:.4f}")
     print("="*70)
     
-    print("\n📊 Feature Importance:")
+    print("\n Feature Importance:")
     print("="*70)
     
     importance_df = pd.DataFrame({
@@ -126,14 +96,14 @@ def analyze_boosting(model, feature_names):
     }).sort_values('Importance', ascending=False)
     
     print(importance_df.to_string(index=False))
-    print("\n💡 Features that contribute most to reducing prediction error")
+    print("\n Features that contribute most to reducing prediction error")
     print("="*70)
     
     return importance_df
 
 
 if __name__ == "__main__":
-    print("\n🚀 Running Gradient Boosting Analysis")
+    print("\n Running Gradient Boosting Analysis")
     print("="*70)
     
     # Load and prepare data
@@ -147,7 +117,7 @@ if __name__ == "__main__":
     importance_df = analyze_boosting(model, data_dict['feature_names'])
     
     # Create visualizations
-    print("\n📊 Creating visualizations...")
+    print("\n Creating visualizations...")
     
     plot_feature_importance(
         data_dict['feature_names'], 
@@ -171,11 +141,11 @@ if __name__ == "__main__":
         save=True
     )
     
-    print("\n✅ Gradient Boosting analysis complete!")
-    print(f"🏆 Final R² Score: {metrics['r2_score']:.4f}")
+    print("\n Gradient Boosting analysis complete!")
+    print(f" Final R² Score: {metrics['r2_score']:.4f}")
     
     # Experiment suggestions
-    print("\n💡 Want to experiment? Try tuning hyperparameters:")
+    print("\n Want to experiment? Try tuning hyperparameters:")
     print("   from src.models.gradient_boosting import train_gradient_boosting")
     print("   # Try slower learning rate with more estimators:")
     print("   train_gradient_boosting(data_dict, n_estimators=200, learning_rate=0.05)")

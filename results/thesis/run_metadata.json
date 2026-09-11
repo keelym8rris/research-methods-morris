@@ -1,5 +1,5 @@
 {
-  "audit_date": "2026-09-11",
+  "analysis_date": "2026-09-11",
   "base_commit": "2cb40f8e4b50f2f1f1681f98405d3e5e9680a703",
   "dataset_sha256": "8b92caac227b8eaadaa480d5364c7b7b876a50d8683cde70ac307134789eb6e4",
   "analysis_sha256": "ea1977f6b7d8a265db16e71d7e871331923012f022c34172c87647376e6501a1",
@@ -39,5 +39,7 @@
   "numpy": "2.3.5",
   "pandas": "2.2.3",
   "sklearn": "1.8.0",
-  "warnings": []
+  "warnings": [],
+  "computation_commit": "525c48e2c55b4445357fa116750e263ec5162938",
+  "analysis_sha256_scope": "Hash of the analysis source at computation_commit, before file renaming and documentation cleanup. Numerical outputs were preserved."
 }

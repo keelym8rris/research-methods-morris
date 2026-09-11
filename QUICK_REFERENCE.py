@@ -1,9 +1,4 @@
-"""
-QUICK REFERENCE GUIDE
-=====================
-
-Quick commands for running different analyses:
-"""
+"""Examples for loading data, fitting models, and examining predictions."""
 
 # This file is documentation, not an executable analysis module.
 QUICK_REFERENCE = r"""
@@ -17,7 +12,7 @@ QUICK_REFERENCE = r"""
 python run_all_models.py
 
 # 2. EXPLORATORY DATA ANALYSIS ONLY
-# Look at your data before building models
+# Inspect the data before fitting models
 python explore_data.py
 
 # 3. COMPARE ALL MODELS
@@ -35,7 +30,7 @@ python src/models/linear_regression.py
 # Decision Tree
 python src/models/decision_tree.py
 
-# Random Forest (often the best!)
+# Random forest
 python src/models/random_forest.py
 
 # Gradient Boosting (often wins competitions)

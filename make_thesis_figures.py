@@ -1,4 +1,4 @@
-"""Render publication figures from saved audited results; never refit models."""
+"""Render publication figures from saved thesis results; never refit models."""
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 ROOT=Path(__file__).resolve().parent
-DATA=ROOT/'results/audited';OUT=DATA/'figures'
+DATA=ROOT/'results/thesis';OUT=DATA/'figures'
 LABELS={'lcavol':'Log cancer volume','lweight':'Log prostate weight','age':'Age','lbph':'Log BPH amount','svi':'Seminal vesicle invasion','lcp':'Log capsular penetration','gleason':'Gleason score','pgg45':'Gleason 4 or 5 percentage'}
 plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10,'axes.spines.top':False,'axes.spines.right':False,'savefig.dpi':300})
 def save(fig,name):

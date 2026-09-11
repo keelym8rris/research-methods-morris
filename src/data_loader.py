@@ -29,7 +29,7 @@ def load_prostate_data(filepath='data/prostate.csv'):
         Loaded dataframe with prostate cancer patient data
     """
     data = pd.read_csv(filepath)
-    print(f"✅ Dataset loaded: {len(data)} patients, {data.shape[1]} features")
+    print(f" Dataset loaded: {len(data)} patients, {get_predictors_and_target(data)[0].shape[1]} predictors")
     return data
 
 
@@ -94,8 +94,8 @@ def prepare_data(data, test_size=0.2, random_state=42):
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
     
-    print(f"📊 Training set: {len(X_train)} patients ({len(X_train)/len(X)*100:.1f}%)")
-    print(f"🧪 Testing set: {len(X_test)} patients ({len(X_test)/len(X)*100:.1f}%)")
+    print(f" Training set: {len(X_train)} patients ({len(X_train)/len(X)*100:.1f}%)")
+    print(f" Testing set: {len(X_test)} patients ({len(X_test)/len(X)*100:.1f}%)")
     
     return {
         'X_train_scaled': X_train_scaled,
