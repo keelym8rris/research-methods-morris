@@ -1,0 +1,43 @@
+{
+  "audit_date": "2026-09-11",
+  "base_commit": "2cb40f8e4b50f2f1f1681f98405d3e5e9680a703",
+  "dataset_sha256": "8b92caac227b8eaadaa480d5364c7b7b876a50d8683cde70ac307134789eb6e4",
+  "analysis_sha256": "ea1977f6b7d8a265db16e71d7e871331923012f022c34172c87647376e6501a1",
+  "patients": 97,
+  "predictors": [
+    "lcavol",
+    "lweight",
+    "age",
+    "lbph",
+    "svi",
+    "lcp",
+    "gleason",
+    "pgg45"
+  ],
+  "excluded_columns": [
+    "train",
+    "lpsa"
+  ],
+  "missing_values": 0,
+  "duplicate_rows": 0,
+  "target": "natural-log PSA (lpsa), not cancer risk",
+  "validation": "5 folds x 10 repeats; identical splits for all models",
+  "seed": 42,
+  "ranking": "mean fold RMSE; exploratory comparison, no statistical superiority claim",
+  "importance_model": "fixed OLS; first five folds overlap evaluation; descriptive, not independent validation",
+  "settings": {
+    "Linear Regression": "Pipeline(steps=[('scale', StandardScaler()), ('model', LinearRegression())])",
+    "Decision Tree": "DecisionTreeRegressor(max_depth=3, min_samples_leaf=5, random_state=42)",
+    "Random Forest": "RandomForestRegressor(max_depth=4, min_samples_leaf=3, n_estimators=500,\n                      n_jobs=1, random_state=42)",
+    "Gradient Boosting": "GradientBoostingRegressor(learning_rate=0.03, max_depth=2, min_samples_leaf=5,\n                          random_state=42)",
+    "MLP (L-BFGS)": "TransformedTargetRegressor(regressor=Pipeline(steps=[('standardscaler',\n                                                      StandardScaler()),\n                                                     ('mlpregressor',\n                                                      MLPRegressor(alpha=1.0,\n                                                                   hidden_layer_sizes=(16,),\n                                                                   max_fun=50000,\n                                                                   max_iter=4000,\n                                                                   random_state=42,\n                                                                   solver='lbfgs'))]),\n                           transformer=StandardScaler())",
+    "Ridge": "Pipeline(steps=[('standardscaler', StandardScaler()), ('ridge', Ridge())])",
+    "Lasso": "Pipeline(steps=[('standardscaler', StandardScaler()),\n                ('lasso', Lasso(alpha=0.05, max_iter=10000))])",
+    "Mean baseline": "DummyRegressor()"
+  },
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "pandas": "2.2.3",
+  "sklearn": "1.8.0",
+  "warnings": []
+}

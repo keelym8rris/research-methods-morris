@@ -111,15 +111,15 @@ def plot_feature_relationships(data, save=True):
     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
     
     features_to_plot = ['lcavol', 'lweight', 'age', 'lbph', 'svi', 'gleason']
-    feature_names = ['Cancer Volume', 'Prostate Weight', 'Age', 
-                     'BPH Amount', 'Seminal Vesicle Invasion', 'Gleason Score']
+    feature_names = ['Log Cancer Volume', 'Log Prostate Weight', 'Age', 
+                     'Log BPH Amount', 'Seminal Vesicle Invasion', 'Gleason Score']
     
     for i, (feature, name) in enumerate(zip(features_to_plot, feature_names)):
         row, col = i // 3, i % 3
         axes[row, col].scatter(data[feature], data['lpsa'], alpha=0.6, 
                               color='coral', edgecolors='black', linewidth=0.5)
         axes[row, col].set_xlabel(name, fontsize=11)
-        axes[row, col].set_ylabel('PSA Level', fontsize=11)
+        axes[row, col].set_ylabel('Log PSA', fontsize=11)
         axes[row, col].set_title(f'{name} vs PSA', fontsize=11, weight='bold')
         axes[row, col].grid(alpha=0.3)
     
@@ -153,9 +153,9 @@ def plot_predictions(y_true, y_pred, model_name, r2_score, save=True):
     plt.scatter(y_true, y_pred, alpha=0.6, s=100, edgecolors='black', linewidth=1)
     plt.plot([y_true.min(), y_true.max()], [y_true.min(), y_true.max()], 
              'r--', lw=2, label='Perfect Prediction Line')
-    plt.xlabel('Actual PSA Levels', fontsize=12)
-    plt.ylabel('Predicted PSA Levels', fontsize=12)
-    plt.title(f'{model_name}: Predicted vs Actual PSA\nR² = {r2_score:.4f}', 
+    plt.xlabel('Actual log PSA', fontsize=12)
+    plt.ylabel('Predicted log PSA', fontsize=12)
+    plt.title(f'{model_name}: Predicted vs Actual log PSA\nR² = {r2_score:.4f}', 
               fontsize=14, pad=20, weight='bold')
     plt.legend(fontsize=11)
     plt.grid(alpha=0.3)
@@ -190,7 +190,7 @@ def plot_residuals(y_true, y_pred, model_name, save=True):
     # Residual plot
     axes[0].scatter(y_pred, residuals, alpha=0.6, s=80)
     axes[0].axhline(y=0, color='r', linestyle='--', linewidth=2)
-    axes[0].set_xlabel('Predicted PSA', fontsize=11)
+    axes[0].set_xlabel('Predicted log PSA', fontsize=11)
     axes[0].set_ylabel('Residual (Actual - Predicted)', fontsize=11)
     axes[0].set_title(f'{model_name}: Residual Plot\n(Should be randomly scattered)', 
                      fontsize=12, weight='bold')
@@ -240,7 +240,7 @@ def plot_feature_importance(feature_names, importances, model_name, save=True):
              color=colors, alpha=0.7, edgecolor='black')
     plt.xlabel('Importance Score', fontsize=12)
     plt.ylabel('Feature', fontsize=12)
-    plt.title(f'{model_name}: Feature Importance\n(Green=Increases PSA, Red=Decreases PSA)', 
+    plt.title(f'{model_name}: Feature Importance\n(Direction depends on the importance method; not causal effects)', 
               fontsize=14, pad=20, weight='bold')
     plt.axvline(x=0, color='black', linestyle='--', linewidth=0.8)
     plt.grid(alpha=0.3, axis='x')
@@ -292,7 +292,7 @@ def plot_model_comparison(comparison_df, save=True):
     axes[1].set_title('Model Comparison: R-squared', fontsize=13, 
                      pad=15, weight='bold')
     axes[1].grid(alpha=0.3, axis='x')
-    axes[1].set_xlim(0, 1)
+    # Allow negative held-out R-squared values to remain visible.
     
     plt.suptitle('Model Performance Comparison\n(Gold = 1st, Silver = 2nd, Bronze = 3rd)', 
                  fontsize=15, y=1.02, weight='bold')
@@ -333,8 +333,8 @@ def plot_all_predictions_grid(y_true, predictions_dict, save=True):
             axes[idx].plot([y_true.min(), y_true.max()], 
                           [y_true.min(), y_true.max()], 
                           'r--', lw=2, alpha=0.8)
-            axes[idx].set_xlabel('Actual PSA', fontsize=10)
-            axes[idx].set_ylabel('Predicted PSA', fontsize=10)
+            axes[idx].set_xlabel('Actual log PSA', fontsize=10)
+            axes[idx].set_ylabel('Predicted log PSA', fontsize=10)
             axes[idx].set_title(f'{model_name}\nR² = {r2:.4f}', 
                               fontsize=11, weight='bold')
             axes[idx].grid(alpha=0.3)
@@ -343,7 +343,7 @@ def plot_all_predictions_grid(y_true, predictions_dict, save=True):
     for idx in range(n_models, len(axes)):
         axes[idx].axis('off')
     
-    plt.suptitle('All Models: Actual vs Predicted PSA Levels', 
+    plt.suptitle('All Models: Actual vs Predicted log PSA', 
                  fontsize=16, y=0.995, weight='bold')
     plt.tight_layout()
     
