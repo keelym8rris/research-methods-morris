@@ -21,6 +21,3 @@ ipywidgets>=8.1.0
 
 # Validation
 pytest>=7.4.0
-
-# IEEE paper generation
-python-docx>=1.1.0
