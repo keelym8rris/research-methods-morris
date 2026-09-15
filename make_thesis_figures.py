@@ -1,5 +1,6 @@
 """Render publication figures from saved thesis results; never refit models."""
 from pathlib import Path
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -13,7 +14,9 @@ def save(fig,name):
     OUT.mkdir(parents=True,exist_ok=True)
     for ext in ('png','pdf','svg'):fig.savefig(OUT/(name+'.'+ext),bbox_inches='tight')
     plt.close(fig)
-def main():
+def main(results_dir=DATA):
+    global DATA, OUT
+    DATA=Path(results_dir);OUT=DATA/'figures'
     s=pd.read_csv(DATA/'model_cv_summary.csv').sort_values('rmse_mean',ascending=False)
     f=pd.read_csv(DATA/'fold_metrics.csv')
     fig,ax=plt.subplots(figsize=(7.3,4.6),layout='constrained')
@@ -62,4 +65,7 @@ def main():
     fig.supxlabel('Gray: 50 fitted coefficients. Blue: mean. Conditional associations, not causal effects.',fontsize=9)
     save(fig,'04_coefficient_stability')
     print('Saved four figures in PNG, PDF, and SVG:',OUT)
-if __name__=='__main__':main()
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--results-dir',type=Path,default=DATA)
+    main(parser.parse_args().results_dir)

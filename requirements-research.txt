@@ -1,4 +1,4 @@
-# Reproduced with Python 3.12.14. TensorFlow is not needed for this analysis.
+# Research package versions recorded for Python 3.12.14.
 numpy==2.3.5
 pandas==2.2.3
 scipy==1.17.0

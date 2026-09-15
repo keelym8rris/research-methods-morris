@@ -1,17 +1,15 @@
 import pandas as pd
 
-from src.data_loader import get_predictors_and_target, load_prostate_data, prepare_data
+from src.data_loader import get_predictors_and_target, load_prostate_data
 from src.research_analysis import build_models, evaluate_models_repeated_cv
 
 
 def test_train_indicator_is_never_a_predictor():
     data = load_prostate_data()
     X, y = get_predictors_and_target(data)
-    prepared = prepare_data(data)
 
     assert "train" in data.columns
     assert "train" not in X.columns
-    assert "train" not in prepared["feature_names"]
     assert "lpsa" not in X.columns
     assert len(X) == len(y) == 97
 

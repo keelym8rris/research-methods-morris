@@ -7,13 +7,12 @@ __pycache__/
 env/
 venv/
 ENV/
+.venv/
+.pytest_cache/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb_checkpoints
-
-# Data files (optional - remove if you want to commit your data)
-# data/
 
 # VS Code
 .vscode/
@@ -22,7 +21,5 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# TensorFlow
-*.h5
-*.pb
-saved_model/
+# Separate reruns used to check the saved research results
+results/check/

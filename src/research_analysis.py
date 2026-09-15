@@ -1,6 +1,6 @@
-"""Leakage-safe, reproducible analysis for the 97-patient pilot dataset.
+"""Shared model definitions and the earlier five-model comparison.
 
-This module supports Part 1 of the thesis. It compares five regression
+This module compares five regression
 algorithms with repeated cross-validation and estimates held-out permutation
 importance for the best-performing model. The outcome is log PSA (``lpsa``),
 not cancer diagnosis or screening risk.
@@ -191,7 +191,7 @@ def held_out_permutation_importance(
 
 
 def run_analysis(data_path="data/prostate.csv", output_dir="results/research"):
-    """Run the thesis pilot analysis and save reproducible tabular outputs."""
+    """Run the earlier comparison and save its tabular outputs."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 

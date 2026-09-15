@@ -1,132 +1,31 @@
-"""
-Data Loading and Preprocessing Module
-======================================
+"""Load the prostate data and separate predictors from the outcome."""
 
-This module handles all data loading, cleaning, and preprocessing operations.
-"""
+from pathlib import Path
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 
 
+DATA_PATH = Path(__file__).resolve().parents[1] / 'data/prostate.csv'
 TARGET_COLUMN = 'lpsa'
 METADATA_COLUMNS = ('train',)
 
 
-def load_prostate_data(filepath='data/prostate.csv'):
-    """
-    Load the prostate cancer dataset.
-    
-    Parameters:
-    -----------
-    filepath : str
-        Path to the CSV file containing prostate cancer data
-        
-    Returns:
-    --------
-    pd.DataFrame
-        Loaded dataframe with prostate cancer patient data
-    """
+def load_prostate_data(filepath=DATA_PATH):
+    """Read the repository CSV or a supplied path."""
     data = pd.read_csv(filepath)
-    print(f" Dataset loaded: {len(data)} patients, {get_predictors_and_target(data)[0].shape[1]} predictors")
+    predictors, _ = get_predictors_and_target(data)
+    print(f'Dataset loaded: {len(data)} records, {predictors.shape[1]} predictors')
     return data
 
 
 def get_predictors_and_target(data, target_column=TARGET_COLUMN):
-    """Separate predictors from the outcome without using dataset metadata.
-
-    The original prostate dataset includes ``train`` to document the split used
-    in the source publication. It is not a patient characteristic and must not
-    be used as a predictor.
-    """
+    """Exclude the source publication's split marker from patient predictors."""
     if target_column not in data.columns:
         raise ValueError(f"Target column '{target_column}' is missing from the dataset")
 
     excluded = [target_column, *METADATA_COLUMNS]
     X = data.drop(columns=excluded, errors='ignore').copy()
     y = data[target_column].copy()
-
-    leaked_metadata = set(METADATA_COLUMNS).intersection(X.columns)
-    if leaked_metadata:
-        raise ValueError(f"Metadata columns leaked into predictors: {sorted(leaked_metadata)}")
     if X.empty:
-        raise ValueError("No predictor columns remain after removing target and metadata")
-
+        raise ValueError('No predictor columns remain after removing target and metadata')
     return X, y
-
-
-def prepare_data(data, test_size=0.2, random_state=42):
-    """
-    Prepare data for machine learning by splitting into train/test sets
-    and scaling features.
-    
-    Parameters:
-    -----------
-    data : pd.DataFrame
-        The prostate cancer dataset
-    test_size : float
-        Proportion of data to use for testing (default: 0.2)
-    random_state : int
-        Random seed for reproducibility (default: 42)
-        
-    Returns:
-    --------
-    dict
-        Dictionary containing:
-        - X_train_scaled: Scaled training features
-        - X_test_scaled: Scaled testing features
-        - y_train: Training target values
-        - y_test: Testing target values
-        - scaler: Fitted StandardScaler object
-        - feature_names: List of feature names
-    """
-    # Separate patient features from target and dataset metadata.
-    X, y = get_predictors_and_target(data)
-    
-    # Split into train and test sets
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
-    )
-    
-    # Scale the features
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
-    
-    print(f" Training set: {len(X_train)} patients ({len(X_train)/len(X)*100:.1f}%)")
-    print(f" Testing set: {len(X_test)} patients ({len(X_test)/len(X)*100:.1f}%)")
-    
-    return {
-        'X_train_scaled': X_train_scaled,
-        'X_test_scaled': X_test_scaled,
-        'X_train': X_train,
-        'X_test': X_test,
-        'y_train': y_train,
-        'y_test': y_test,
-        'scaler': scaler,
-        'feature_names': list(X.columns)
-    }
-
-
-def get_feature_descriptions():
-    """
-    Return descriptions of all features in the dataset.
-    
-    Returns:
-    --------
-    dict
-        Dictionary mapping feature names to their descriptions
-    """
-    return {
-        'lcavol': 'Log of cancer volume',
-        'lweight': 'Log of prostate weight',
-        'age': 'Patient age (years)',
-        'lbph': 'Log of benign prostatic hyperplasia amount',
-        'svi': 'Seminal vesicle invasion (0=no, 1=yes)',
-        'lcp': 'Log of capsular penetration',
-        'gleason': 'Gleason score (cancer grading)',
-        'pgg45': 'Percentage Gleason scores 4 or 5',
-        'train': 'Source-publication split indicator (metadata; never a predictor)',
-        'lpsa': 'Log PSA level (TARGET VARIABLE)'
-    }
