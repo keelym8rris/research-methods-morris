@@ -1,4 +1,4 @@
-"""Render publication figures from saved thesis results; never refit models."""
+"""Render thesis figures from saved results and predictor data; never refit models."""
 from pathlib import Path
 import argparse
 import numpy as np
@@ -14,7 +14,56 @@ def save(fig,name):
     OUT.mkdir(parents=True,exist_ok=True)
     for ext in ('png','pdf','svg'):fig.savefig(OUT/(name+'.'+ext),bbox_inches='tight')
     plt.close(fig)
-def main(results_dir=DATA):
+def plot_r_squared(summary):
+    """Compare mean held-out fold R², using the same scores as the results table."""
+    ordered=summary.sort_values('r2_mean',ascending=False).reset_index(drop=True)
+    labels=ordered.model.replace({'Linear Regression':'OLS','Random Forest':'Random forest','Gradient Boosting':'Gradient boosting','Decision Tree':'Decision tree'})
+    fig,ax=plt.subplots(figsize=(7.1,3.9))
+    y=np.arange(len(ordered))
+    colors=['#999999' if name=='Mean baseline' else '#386f95' for name in ordered.model]
+    ax.barh(y,ordered.r2_mean,color=colors,height=.66,zorder=3)
+    ax.set_yticks(y,labels)
+    ax.invert_yaxis()
+    ax.axvline(0,color='#333333',lw=.9,zorder=4)
+    ax.set_xlim(min(-.17,ordered.r2_mean.min()-.08),max(.63,ordered.r2_mean.max()+.08))
+    ax.set_xlabel('Mean held-out fold R² (higher is better)')
+    ax.grid(axis='x',color='#dddddd',lw=.65,zorder=0)
+    ax.spines['left'].set_visible(False)
+    ax.tick_params(axis='y',length=0)
+    for i,value in enumerate(ordered.r2_mean):
+        ax.text(value+(.009 if value>=0 else -.009),i,f'{value:.3f}',
+                ha='left' if value>=0 else 'right',va='center',fontsize=10)
+    evaluations=int(ordered.evaluations.iloc[0])
+    ax.set_title(f'R² across {evaluations} held-out evaluations per model',fontsize=12,pad=12)
+    fig.tight_layout()
+    save(fig,'05_r_squared_comparison')
+
+def plot_feature_correlations(data_path):
+    """Describe the eight predictors; exclude the outcome and split marker."""
+    data=pd.read_csv(data_path)
+    features=list(LABELS)
+    corr=data[features].corr(method='pearson')
+    corr.to_csv(DATA/'predictor_correlations.csv',float_format='%.12g')
+    fig,ax=plt.subplots(figsize=(6.6,5.45))
+    im=ax.imshow(corr,vmin=-1,vmax=1,cmap='RdBu_r')
+    ax.set_xticks(range(len(features)),features,rotation=45,ha='right')
+    ax.set_yticks(range(len(features)),features)
+    for i in range(len(features)):
+        for j in range(len(features)):
+            value=corr.iloc[i,j]
+            ax.text(j,i,f'{value:.2f}',ha='center',va='center',fontsize=10,
+                    color='white' if abs(value)>.55 else '#111111')
+    ax.set_xticks(np.arange(-.5,len(features),1),minor=True)
+    ax.set_yticks(np.arange(-.5,len(features),1),minor=True)
+    ax.grid(which='minor',color='white',linewidth=.7)
+    ax.tick_params(which='minor',bottom=False,left=False)
+    ax.set_title('Correlations among the eight predictors',pad=12,fontsize=12)
+    cb=fig.colorbar(im,ax=ax,fraction=.046,pad=.04,ticks=[-1,-.5,0,.5,1])
+    cb.set_label('Pearson correlation (r)')
+    fig.tight_layout()
+    save(fig,'06_feature_correlations')
+
+def main(results_dir=DATA,data_path=ROOT/'data/prostate.csv'):
     global DATA, OUT
     DATA=Path(results_dir);OUT=DATA/'figures'
     s=pd.read_csv(DATA/'model_cv_summary.csv').sort_values('rmse_mean',ascending=False)
@@ -64,8 +113,12 @@ def main(results_dir=DATA):
     ax.set_title('Linear coefficient variation across fitted folds',loc='left',weight='bold')
     fig.supxlabel('Gray: 50 fitted coefficients. Blue: mean. Conditional associations, not causal effects.',fontsize=9)
     save(fig,'04_coefficient_stability')
-    print('Saved four figures in PNG, PDF, and SVG:',OUT)
+    plot_r_squared(s)
+    plot_feature_correlations(data_path)
+    print('Saved six figures in PNG, PDF, and SVG:',OUT)
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--results-dir',type=Path,default=DATA)
-    main(parser.parse_args().results_dir)
+    parser.add_argument('--data-path',type=Path,default=ROOT/'data/prostate.csv')
+    args=parser.parse_args()
+    main(args.results_dir,args.data_path)

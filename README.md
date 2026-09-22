@@ -7,7 +7,7 @@ This is my undergraduate research project at ETSU. I use Python to compare machi
 - `data/` contains the dataset.
 - `src/` contains the analysis code.
 - `run_thesis_analysis.py` runs the larger model comparison.
-- `make_thesis_figures.py` creates the figures from saved results.
+- `make_thesis_figures.py` creates the figures from saved results and the predictor data.
 - `results/thesis/` contains the main results and figures.
 - `run_research_analysis.py` runs the earlier five-model comparison.
 - `tests/` contains checks for the analysis.
@@ -30,6 +30,13 @@ To recreate the figures from the saved thesis results, run:
 ```bash
 python make_thesis_figures.py
 ```
+
+The script saves six figures as PNG, PDF, and SVG files in `results/thesis/figures/`. It does not refit the models. The two additions are:
+
+- `05_r_squared_comparison`: mean R² across the 50 held-out folds for each model.
+- `06_feature_correlations`: Pearson correlations among the eight predictors, using all 97 records. The values are also saved in `results/thesis/predictor_correlations.csv`.
+
+The figure filenames keep their original sequence; their numbers differ from the figure numbers in the Word thesis.
 
 ## Checks
 
