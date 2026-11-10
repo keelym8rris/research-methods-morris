@@ -1,0 +1,151 @@
+model,repeat,fold,n_test,rmse
+Ridge age and weight,1,1,20,1.05781067687
+Ridge all predictors,1,1,20,0.588499397157
+Mean baseline,1,1,20,1.20566042841
+Ridge age and weight,1,2,20,1.06956944484
+Ridge all predictors,1,2,20,0.717452050489
+Mean baseline,1,2,20,1.06135631401
+Ridge age and weight,1,3,19,1.0925574076
+Ridge all predictors,1,3,19,0.77471600192
+Mean baseline,1,3,19,1.17219889432
+Ridge age and weight,1,4,19,1.2334052843
+Ridge all predictors,1,4,19,0.93316290264
+Mean baseline,1,4,19,1.1934758974
+Ridge age and weight,1,5,19,0.996368570301
+Ridge all predictors,1,5,19,0.789598363001
+Mean baseline,1,5,19,1.25153492249
+Ridge age and weight,2,1,20,0.940690258478
+Ridge all predictors,2,1,20,0.666108610416
+Mean baseline,2,1,20,1.00272063057
+Ridge age and weight,2,2,20,1.0549125705
+Ridge all predictors,2,2,20,0.50883653585
+Mean baseline,2,2,20,1.15101756328
+Ridge age and weight,2,3,19,0.942717420567
+Ridge all predictors,2,3,19,0.8092878434
+Mean baseline,2,3,19,1.05570550338
+Ridge age and weight,2,4,19,1.21408381249
+Ridge all predictors,2,4,19,0.722553733238
+Mean baseline,2,4,19,1.42604162082
+Ridge age and weight,2,5,19,1.18268492872
+Ridge all predictors,2,5,19,0.897073138409
+Mean baseline,2,5,19,1.17277502637
+Ridge age and weight,3,1,20,0.749202315793
+Ridge all predictors,3,1,20,0.735453222479
+Mean baseline,3,1,20,0.866206936812
+Ridge age and weight,3,2,20,1.23223587917
+Ridge all predictors,3,2,20,0.801609701727
+Mean baseline,3,2,20,1.34662720588
+Ridge age and weight,3,3,19,1.05571848235
+Ridge all predictors,3,3,19,0.759596607804
+Mean baseline,3,3,19,1.00517294717
+Ridge age and weight,3,4,19,1.24894521573
+Ridge all predictors,3,4,19,0.595341110645
+Mean baseline,3,4,19,1.31347240499
+Ridge age and weight,3,5,19,0.994034406246
+Ridge all predictors,3,5,19,0.722761162813
+Mean baseline,3,5,19,1.16617303857
+Ridge age and weight,4,1,20,1.0790975369
+Ridge all predictors,4,1,20,0.90475468104
+Mean baseline,4,1,20,1.08582336681
+Ridge age and weight,4,2,20,1.12048368873
+Ridge all predictors,4,2,20,0.728266195747
+Mean baseline,4,2,20,1.28089012248
+Ridge age and weight,4,3,19,0.832016134989
+Ridge all predictors,4,3,19,0.60402404987
+Mean baseline,4,3,19,0.976475615263
+Ridge age and weight,4,4,19,1.07170641676
+Ridge all predictors,4,4,19,0.801443578304
+Mean baseline,4,4,19,1.25142431487
+Ridge age and weight,4,5,19,1.15651075272
+Ridge all predictors,4,5,19,0.741755917937
+Mean baseline,4,5,19,1.17347282169
+Ridge age and weight,5,1,20,1.15310699301
+Ridge all predictors,5,1,20,0.757094981049
+Mean baseline,5,1,20,1.21483149644
+Ridge age and weight,5,2,20,0.860332229616
+Ridge all predictors,5,2,20,0.503994783444
+Mean baseline,5,2,20,1.0094884339
+Ridge age and weight,5,3,19,1.28080493582
+Ridge all predictors,5,3,19,0.842678755092
+Mean baseline,5,3,19,1.35070548936
+Ridge age and weight,5,4,19,0.920761481534
+Ridge all predictors,5,4,19,0.71203570345
+Mean baseline,5,4,19,1.09114781833
+Ridge age and weight,5,5,19,1.0525675817
+Ridge all predictors,5,5,19,0.677076060375
+Mean baseline,5,5,19,1.15298200178
+Ridge age and weight,6,1,20,1.10073582285
+Ridge all predictors,6,1,20,0.777926091995
+Mean baseline,6,1,20,1.25655005
+Ridge age and weight,6,2,20,1.10740526676
+Ridge all predictors,6,2,20,0.803313234614
+Mean baseline,6,2,20,1.10685183319
+Ridge age and weight,6,3,19,1.02130215394
+Ridge all predictors,6,3,19,0.673724478267
+Mean baseline,6,3,19,1.10244381934
+Ridge age and weight,6,4,19,1.04480074834
+Ridge all predictors,6,4,19,0.636362349884
+Mean baseline,6,4,19,1.06656494057
+Ridge age and weight,6,5,19,1.09920341892
+Ridge all predictors,6,5,19,0.700007998509
+Mean baseline,6,5,19,1.21991398207
+Ridge age and weight,7,1,20,1.06071390545
+Ridge all predictors,7,1,20,0.803004027235
+Mean baseline,7,1,20,1.13120896639
+Ridge age and weight,7,2,20,1.19110094972
+Ridge all predictors,7,2,20,0.667879796518
+Mean baseline,7,2,20,1.12378007643
+Ridge age and weight,7,3,19,1.00056667863
+Ridge all predictors,7,3,19,0.381240828449
+Mean baseline,7,3,19,1.2327361228
+Ridge age and weight,7,4,19,0.916237367801
+Ridge all predictors,7,4,19,0.740962136066
+Mean baseline,7,4,19,1.10911577567
+Ridge age and weight,7,5,19,1.15377066596
+Ridge all predictors,7,5,19,0.856157951028
+Mean baseline,7,5,19,1.24080678866
+Ridge age and weight,8,1,20,1.48228273813
+Ridge all predictors,8,1,20,0.939942459938
+Mean baseline,8,1,20,1.57135693541
+Ridge age and weight,8,2,20,1.08248128205
+Ridge all predictors,8,2,20,0.835251246769
+Mean baseline,8,2,20,1.15090685124
+Ridge age and weight,8,3,19,0.876521536475
+Ridge all predictors,8,3,19,0.586457311316
+Mean baseline,8,3,19,1.03566619897
+Ridge age and weight,8,4,19,0.738772845502
+Ridge all predictors,8,4,19,0.779021156057
+Mean baseline,8,4,19,0.923812886915
+Ridge age and weight,8,5,19,0.948861870574
+Ridge all predictors,8,5,19,0.62993624011
+Mean baseline,8,5,19,0.948849958529
+Ridge age and weight,9,1,20,1.18561863556
+Ridge all predictors,9,1,20,0.81757653467
+Mean baseline,9,1,20,1.22190792069
+Ridge age and weight,9,2,20,0.827674857681
+Ridge all predictors,9,2,20,0.796016601491
+Mean baseline,9,2,20,0.984302032148
+Ridge age and weight,9,3,19,0.968173226109
+Ridge all predictors,9,3,19,0.535957840367
+Mean baseline,9,3,19,1.1281146792
+Ridge age and weight,9,4,19,1.26910093293
+Ridge all predictors,9,4,19,0.652500521382
+Mean baseline,9,4,19,1.37850785998
+Ridge age and weight,9,5,19,0.971723455899
+Ridge all predictors,9,5,19,0.920709192371
+Mean baseline,9,5,19,1.04476528547
+Ridge age and weight,10,1,20,1.0082532791
+Ridge all predictors,10,1,20,0.618095971385
+Mean baseline,10,1,20,0.976374248146
+Ridge age and weight,10,2,20,0.856453145701
+Ridge all predictors,10,2,20,0.591313137074
+Mean baseline,10,2,20,0.940530512893
+Ridge age and weight,10,3,19,1.05554718267
+Ridge all predictors,10,3,19,0.775171166832
+Mean baseline,10,3,19,1.17154086975
+Ridge age and weight,10,4,19,1.00950041478
+Ridge all predictors,10,4,19,0.837908834513
+Mean baseline,10,4,19,1.05135687369
+Ridge age and weight,10,5,19,1.3765366312
+Ridge all predictors,10,5,19,0.922514274695
+Mean baseline,10,5,19,1.58694001909

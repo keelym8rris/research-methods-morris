@@ -1,0 +1,32 @@
+{
+  "analysis_date": "2026-11-10",
+  "dataset_sha256": "7ba9ee99b800c1e93ab7ac670dc9ed05f6f8931fac9f6116c186c04f284a7086",
+  "script_sha256": "e6a261bc4b93c2da8f64106934050f8fe2e52e1fa2c34f69048f0ed1f163e6eb",
+  "patients": 97,
+  "predictors": [
+    "age",
+    "lweight"
+  ],
+  "excluded_predictors": [
+    "lcavol",
+    "lbph",
+    "svi",
+    "lcp",
+    "gleason",
+    "pgg45"
+  ],
+  "target": "natural-log PSA (lpsa)",
+  "model": "StandardScaler followed by Ridge(alpha=1.0)",
+  "scaling": "fitted separately on each training fold",
+  "validation": "same 5 folds x 10 repeats as the main thesis comparison",
+  "stratified": false,
+  "seed": 42,
+  "summary": "unweighted mean and sample SD of 50 held-out fold RMSE values",
+  "original_results_reproduced": true,
+  "hyperparameter_search": false,
+  "interpretation": "Exploratory reduced-predictor log-PSA regression; not early cancer detection. Preoperative availability of lweight has not been established.",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "pandas": "3.0.1",
+  "sklearn": "1.8.0"
+}

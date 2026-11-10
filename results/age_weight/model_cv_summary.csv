@@ -1,0 +1,4 @@
+model,rmse_mean,rmse_sd,evaluations
+Ridge age and weight,1.05891326877,0.150678852707,50
+Ridge all predictors,0.731482529397,0.121869015813,50
+Mean baseline,1.15364572605,0.15160651487,50

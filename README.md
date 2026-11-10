@@ -49,3 +49,14 @@ python tests/verify_results.py
 The checks recalculate the saved metrics and verify the held-out predictions and fold assignments.
 
 The written thesis is kept separately in a Word document.
+
+## Age and prostate weight comparison
+
+```bash
+python run_age_weight_analysis.py
+```
+
+This follow-up keeps only `age` and `lweight` (log prostate weight) and uses the same standardized ridge model with `alpha=1.0`. It checks that its 50 folds match the saved thesis partitions and reproduces the original full ridge and mean-baseline results before saving the new comparison in `results/age_weight/`.
+
+Mean fold RMSE is 1.059 for age and weight, 0.731 for full ridge, and 1.154 for the mean-only baseline, all in natural-log PSA units. The reduced model improves on the baseline by 8.2%, but its error is 44.8% higher than full ridge. This is an exploratory comparison of log-PSA prediction. The documentation does not establish that the stored weight was available before surgery, and the results do not demonstrate early cancer detection.
+
